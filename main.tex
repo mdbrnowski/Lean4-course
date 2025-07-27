@@ -1,0 +1,147 @@
+% arara: latexmk: { engine: lualatex, options: [-synctex=1, -aux-directory=./build] }
+\documentclass[polish,pretty]{angav}
+
+\title{Lean i teoria typów}
+\author{Michał Dobranowski}
+\date{\today}
+
+\usepackage{ebproof}
+\newcommand{\toto}{\twoheadrightarrow}
+\newcommand{\FV}{\opname{FV}}
+\tikzset{>=to}
+
+\begin{document}
+\maketitle
+
+\section{Wstęp}
+
+Aby zrozumieć, dlaczego możemy ufać dowodowi w systemie wspomagającym dowodzenie (ang. \textit{proof assistant}) bardziej niż takiemu napisanemu językiem naturalnym, należy zrozumieć narzędzia oferowane przez teorię typów, na której zbudowany jest każdy znany autorowi tego typu system.
+Z kolei aby zrozumieć teorię typów, niezbędnym narzędziem jest rachunek lambda, którym zajmiemy się na samym początku.
+Chociaż ten kurs nigdy nie miał być teoretyczny, zdaniem autora formalizmy dotyczące (typowanego) rachunku lambda są niezwykle ciekawe, więc w odpowiednich miejscach Czytelnik jest zachęcany do pogłębienia wiedzy, czy też przeprowadzenia, tudzież przeczytania, dowodów przytaczanych twierdzeń.
+
+\section{Rachunek lambda}
+
+Rachunek lambda to język złożony z termów, z których każdy to:
+\begin{itemize}
+    \item zmienna (zazwyczaj oznaczana małą literą, np. $x$),
+    \item $\lambda$-abstrakcja postaci $\lambda x\ldotp M$, gdzie $x$ jest zmienną, a $M$ jest termem,
+    \item aplikacja postaci $MN$, gdzie $M$ i $N$ są termami.
+\end{itemize}
+
+Formalnie termy można więc zdefiniować następująco:
+\[ M \Coloneqq x \mid \lambda x\ldotp M \mid (MM), \]
+gdzie $x$ reprezentuje dowolną zmienną.
+
+Aby uprościć zapis, będziemy pisać $MNP$ zamiast $(MN)P$ -- to znaczy stwierdzamy, że aplikacja jest łączna lewostronnie. Ponadto, wiele $\lambda$-abstrakcji zapisujemy jako $\lambda x_1 \ldots x_n\ldotp M$, co jest równoważne termowi $\lambda x_1\ldotp (\lambda x_2\ldotp (\ldots (\lambda x_n\ldotp M) \ldots))$. Kropka w tym zapisie jest bardzo istotna, np.
+\begin{align*}
+    \lambda xyz\ldotp M &= \lambda x\ldotp (\lambda y\ldotp (\lambda z\ldotp M)), \\
+    \lambda xy\ldotp z M &= \lambda x\ldotp (\lambda y\ldotp (z M)).
+\end{align*}
+
+W termie $\lambda x\ldotp M$ zmienna $x$ jest \vocab{zmienną związaną} w $M$.
+Zmienne występujące w $M$, które nie są związane przez żadną $\lambda$-abstrakcję, nazywamy \vocab{zmiennymi wolnymi}.
+\marginalia{W termie $xz(\lambda xy\ldotp (xyz))$ zmienna $x$ występuje jako wolna i związana, w zależności od kontekstu.}
+Na przykład w termie $\lambda x\ldotp (x y)$ zmienna $x$ jest zmienną związaną, a $y$ jest zmienną wolną.
+Zbiór zmiennych wolnych termu $M$ oznaczamy jako $\FV(M)$.
+Term nazywamy \vocab{kombinatorem} lub \vocab{termem zamkniętym}, jeśli $\FV(M) = \emptyset$.
+Zbiór kombinatorów oznaczamy przez $\Lambda^\emptyset$.
+
+\begin{remark}
+    Formalnie definiujemy $\FV(M)$ rekurencyjnie:
+    \[ \FV(x) = \{x\}, \]
+    \[ \FV(\lambda x\ldotp M) = \FV(M) \setminus \{x\}, \]
+    \[ \FV(MN) = \FV(M) \cup FV(N). \]
+\end{remark}
+
+\subsection{Alfa-konwersja}
+
+\vocab{$\alpha$-konwersja} to przekształcenie termu, które polega na zmianie nazwy zmiennej (unikając kolizji oznaczeń zmiennych). Wprowadzamy relację równoważności $\equiv_\alpha$ w zbiorze termów $\Lambda$ w ten sposób, że dane dwa termy $M$ i $N$ są równoważne, jeśli można otrzymać jeden z drugiego poprzez (wielokrotne) $\alpha$-konwersje. Na przykład:
+\[ a (\lambda b\ldotp bc) \equiv_\alpha a (\lambda d\ldotp dc), \]
+natomiast
+\[ \lambda a\ldotp ab \neq_\alpha \lambda b\ldotp bb. \]
+
+Od tej pory utożsamiamy ze sobą termy różniące się jedynie nazwami zmiennych, czyli jeśli $M \equiv_\alpha N$, to $M$ i $N$ są tym samym termem.
+
+\begin{remark}
+    Bardziej formalnie, od tej pory będziemy operować na klasach abstrakcji relacji $\equiv_\alpha$ (elementach zbioru $\Lambda/{\equiv_\alpha}$), podobnie jak przy działaniach modulo operujemy na klasach abstrakcji relacji przystawania modulo $p$ (elementach zbioru $\ZZ/{\equiv_p}$).
+\end{remark}
+
+Będziemy stosować dosyć uniwersalny zapis $M[x \coloneqq N]$ na term, który powstał z termu $M$ poprzez zastąpienie wszystkich \emph{wolnych} wystąpień zmiennej $x$ termem $N$.
+Zakładamy przy tym, że żadna zmienna wolna w $N$ nie zacznie być związana w $M[x \coloneqq N]$ (ponownie unikamy kolizji oznaczeń).
+
+\subsection{Beta-redukcja}
+
+\vocab{$\beta$-redukcja} to taka relacja $\to_\beta$ w zbiorze termów $\Lambda$, że $M \to_\beta N$, gdy \vocab{$\beta$-redeks} postaci $(\lambda x\ldotp P)Q$ w termie $M$ zostaje zastąpiony przez $P[x \coloneqq Q]$ w termie $N$.
+Relacja $\toto_\beta$ to domknięcie przechodnio-zwrotne relacji $\to_\beta$ (czyli najmniejsza relacja przechodnia i zwrotna, która zawiera relację $\to_\beta$).
+Piszemy $M \downarrow_\beta N$, jeśli istnieje term $P$ taki, że $M \toto_\beta P$ i $N \to_\beta P$.
+
+\begin{theorem}[Churcha-Rossera]
+    Jeśli $M \toto_\beta P$ oraz $M \toto_\beta Q$, to $P \downarrow_\beta Q$.
+\end{theorem}
+
+Jest to jedno z ważniejszych twierdzeń rachunku lambda, mówiące o tym, że relacja $\toto_\beta$ jest \vocab{konfluentna}, czyli że różne drogi redukcyjne prowadzą do tego samego termu.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \node (M) at (0, 0) {$M$};
+        \node (P) at (-2, -2) {$P$};
+        \node (Q) at (2, -2) {$Q$};
+        \node (X) at (0, -4) {$\cdot$};
+        \draw[->>] (M) to node[above] {\footnotesize$\beta$} (P);
+        \draw[->>] (M) to node[above] {\footnotesize$\beta$} (Q);
+        \draw[->>] (P) to node[above] {\footnotesize$\beta$} (X);
+        \draw[->>] (Q) to node[above] {\footnotesize$\beta$} (X);
+    \end{tikzpicture}
+    \caption{Ilustracja do twierdzenia Churcha-Rossera.}
+    \label{fig:church-rosser}
+\end{figure}
+
+\begin{remark}[Rachunek lambda jako teoria równościowa]
+    Rachunek lambda z $\beta$-redukcją można potraktować jako teorię równościową (zwaną teorią $\lambda\beta$), czyli zbiór formuł zamknięty ze względu na reguły wnioskowania. Czytelnik zainteresowany logiką formalną może zastanowić się, jakie reguły wnioskowania są potrzebne oraz co daje nam opisana niżej $\eta$-redukcja (teoria $\lambda\beta\eta$).
+\end{remark}
+
+\subsection{Eta-redukcja}
+
+
+
+W tym miejscu kończymy krótkie wprowadzenie do rachunku lambda, chociaż nie można powiedzieć, że temat został wyczerpany chociaż w najmniejszym stopniu. Zaintrygowany Czytelnik może przeczytać więcej o kombinatorach punktu stałego, drzewach Böhma czy wreszcie reprezentowaniu obliczeń maszyny Turinga za pomocą rachunku lambda.
+
+\section{Teoria typów}
+
+Zajmiemy się teraz sposobem typowania rachunku lambda wprowadzonym przez Alonzo Churcha (istnieje również alternatywna, równie popularna, wersja wprowadzona przez Haskella Curry'ego).
+
+
+
+Teoria zbiorów służy za podstawę matematyki, ponieważ oferuje informacje semantyczne, np.
+\marginalia{Stwierdzenie prawdziwości tego zdania wymaga przeprowadzenia dowodu małego twierdzenie Fermata oraz pierwszości liczby $7$.}
+\[ 7 \in \left\{n \in \NN \mid \forall a \in \NN, a^n \equiv a \pmod{n} \right\}. \]
+Ze skonstruowanych w ten sposób zbiorów łatwo odczytać interesujące nas własności, trudniej jednak dowieść ich prawdziwości.
+Z drugiej strony teoria typów oferuje (uboższe na pierwszy rzut oka) informacje syntaktyczne, np.
+\[ 1 + (2 \cdot 3) : \NN, \]
+za to nie potrzebuje \emph{dowodu}, a jedynie \emph{obliczenia} zgodnie z danymi regułami.
+
+\subsection{Izomorfizm Curry'ego-Howarda}
+
+Izomorfizm Curry'ego-Howarda to twierdzenie, które łączy logikę i teorię typów.
+Mówi ono, że jeśli formułom logicznym przypiszemy odpowiednie typy, a dowodom tych formuł przypiszemy odpowiednie termy, to otrzymamy izomorfizm postaci:
+\[ \text{formuła ma dowód} \iff \text{typ ma term}. \]
+W ten sposób możemy przepisać formułę logiczną do postaci typu i udowodnić ją, konstruując term tego typu.
+W tym właśnie procesie przydaje się oprogramowanie takie jak Lean.
+
+\section{Lean}
+
+\begin{minted}{lean4}
+def add (x y : ℕ) : ℕ := x + y
+
+theorem add_comm (x y : ℕ) : add x y = add y x := by
+  induction x with
+  | zero => simp [add]
+  | succ x ih => simp [add, ih]
+
+
+theorem add_assoc (x y z : ℕ) : add (add x y) z = add x (add y z) := by
+  sorry
+\end{minted}
+
+\end{document}
