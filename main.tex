@@ -12,10 +12,11 @@
 
 \begin{document}
 \maketitle
+\tableofcontents
 
 \section{Wstęp}
 
-Aby zrozumieć, dlaczego możemy ufać dowodowi w systemie wspomagającym dowodzenie (ang. \textit{proof assistant}) bardziej niż takiemu napisanemu językiem naturalnym, należy zrozumieć narzędzia oferowane przez teorię typów, na której zbudowany jest każdy znany autorowi tego typu system.
+Aby zrozumieć, dlaczego systemowi wspomagającego dowodzenie (ang. \textit{proof assistant}) możemy ufać bardziej niż tuszowi na papierze, należy zrozumieć narzędzia oferowane przez teorię typów, na której zbudowany jest każdy znany autorowi tego typu system.
 Z kolei aby zrozumieć teorię typów, niezbędnym narzędziem jest rachunek lambda, którym zajmiemy się na samym początku.
 Chociaż ten kurs nigdy nie miał być teoretyczny, zdaniem autora formalizmy dotyczące (typowanego) rachunku lambda są niezwykle ciekawe, więc w odpowiednich miejscach Czytelnik jest zachęcany do pogłębienia wiedzy, czy też przeprowadzenia, tudzież przeczytania, dowodów przytaczanych twierdzeń.
 
@@ -40,17 +41,19 @@ Aby uprościć zapis, będziemy pisać $MNP$ zamiast $(MN)P$ -- to znaczy stwier
 
 W termie $\lambda x\ldotp M$ zmienna $x$ jest \vocab{zmienną związaną} w $M$.
 Zmienne występujące w $M$, które nie są związane przez żadną $\lambda$-abstrakcję, nazywamy \vocab{zmiennymi wolnymi}.
-\marginalia{W termie $xz(\lambda xy\ldotp (xyz))$ zmienna $x$ występuje jako wolna i związana, w zależności od kontekstu.}
 Na przykład w termie $\lambda x\ldotp (x y)$ zmienna $x$ jest zmienną związaną, a $y$ jest zmienną wolną.
+W termie $xz(\lambda xy\ldotp (xyz))$ zmienna $x$ raz występuje jako zmienna wolna, a raz jako związana. Takich sytuacji będziemy unikać ze względów czysto estetycznych.
+
 Zbiór zmiennych wolnych termu $M$ oznaczamy jako $\FV(M)$.
-Term nazywamy \vocab{kombinatorem} lub \vocab{termem zamkniętym}, jeśli $\FV(M) = \emptyset$.
-Zbiór kombinatorów oznaczamy przez $\Lambda^\emptyset$.
+Term nazywamy \vocab{termem zamkniętym} lub \vocab{kombinatorem}, jeśli $\FV(M) = \emptyset$.
 
 \begin{remark}
     Formalnie definiujemy $\FV(M)$ rekurencyjnie:
-    \[ \FV(x) = \{x\}, \]
-    \[ \FV(\lambda x\ldotp M) = \FV(M) \setminus \{x\}, \]
-    \[ \FV(MN) = \FV(M) \cup FV(N). \]
+    \begin{align*}
+        \FV(x) &= \{x\}, \\
+        \FV(\lambda x\ldotp M) &= \FV(M) \setminus \{x\}, \\
+        \FV(MN) &= \FV(M) \cup FV(N).
+    \end{align*}
 \end{remark}
 
 \subsection{Alfa-konwersja}
@@ -58,7 +61,8 @@ Zbiór kombinatorów oznaczamy przez $\Lambda^\emptyset$.
 \vocab{$\alpha$-konwersja} to przekształcenie termu, które polega na zmianie nazwy zmiennej (unikając kolizji oznaczeń zmiennych). Wprowadzamy relację równoważności $\equiv_\alpha$ w zbiorze termów $\Lambda$ w ten sposób, że dane dwa termy $M$ i $N$ są równoważne, jeśli można otrzymać jeden z drugiego poprzez (wielokrotne) $\alpha$-konwersje. Na przykład:
 \[ a (\lambda b\ldotp bc) \equiv_\alpha a (\lambda d\ldotp dc), \]
 natomiast
-\[ \lambda a\ldotp ab \neq_\alpha \lambda b\ldotp bb. \]
+\[ \lambda a\ldotp ab \nequiv_\alpha \lambda b\ldotp bb, \]
+ponieważ zamiana zmiennej $a$ na $b$ prowadzi do kolizji oznaczeń zmiennych.
 
 Od tej pory utożsamiamy ze sobą termy różniące się jedynie nazwami zmiennych, czyli jeśli $M \equiv_\alpha N$, to $M$ i $N$ są tym samym termem.
 
@@ -73,13 +77,34 @@ Zakładamy przy tym, że żadna zmienna wolna w $N$ nie zacznie być związana w
 
 \vocab{$\beta$-redukcja} to taka relacja $\to_\beta$ w zbiorze termów $\Lambda$, że $M \to_\beta N$, gdy \vocab{$\beta$-redeks} postaci $(\lambda x\ldotp P)Q$ w termie $M$ zostaje zastąpiony przez $P[x \coloneqq Q]$ w termie $N$.
 Relacja $\toto_\beta$ to domknięcie przechodnio-zwrotne relacji $\to_\beta$ (czyli najmniejsza relacja przechodnia i zwrotna, która zawiera relację $\to_\beta$).
-Piszemy $M \downarrow_\beta N$, jeśli istnieje term $P$ taki, że $M \toto_\beta P$ i $N \to_\beta P$.
+Piszemy $M \downarrow_\beta N$, jeśli istnieje term $P$ taki, że $M \toto_\beta P$ i $N \toto_\beta P$.
+
+Jeśli w termie występuje więcej niż jeden $\beta$-redeks, to $\beta$-redukcja nie jest deterministyczna -- możemy wybrać dowolny z nich i wykonać redukcję.
+
+\begin{example}
+    \label{eq:beta-reduction}
+    Pokazane poniżej są niektóre ścieżki redukcyjne dla podanego termu.
+    \begin{center}
+        \begin{tikzpicture}
+            \node (start) at (0, 0) {$\left(\lambda x\ldotp xx\right)\left(\left(\lambda y\ldotp y\right) z\right)$};
+            \node (A) at (3, 2) {$\left(\lambda x\ldotp xx\right)z$};
+            \node (B) at (2, -2) {$\left(\left(\lambda y\ldotp y\right) z\right)\left(\left(\lambda y\ldotp y\right) z\right)$};
+            \node (B2) at (6, -2) {$\left(\left(\lambda y\ldotp y\right) z\right)z$};
+            \node (end) at (9, 0) {$zz$};
+            \draw[->] (start) to node[above left] {\footnotesize$\beta$} (A);
+            \draw[->] (start) to node[below left] {\footnotesize$\beta$} (B);
+            \draw[->] (B) to node[below] {\footnotesize$\beta$} (B2);
+            \draw[->] (B2) to node[below right] {\footnotesize$\beta$} (end);
+            \draw[->] (A) to node[above] {\footnotesize$\beta$} (end);
+        \end{tikzpicture}
+    \end{center}
+\end{example}
 
 \begin{theorem}[Churcha-Rossera]
     Jeśli $M \toto_\beta P$ oraz $M \toto_\beta Q$, to $P \downarrow_\beta Q$.
 \end{theorem}
 
-Jest to jedno z ważniejszych twierdzeń rachunku lambda, mówiące o tym, że relacja $\toto_\beta$ jest \vocab{konfluentna}, czyli że różne drogi redukcyjne prowadzą do tego samego termu.
+Jest to jedno z ważniejszych twierdzeń rachunku lambda, mówiące o tym, że relacja $\toto_\beta$ ma \vocab{własność rombu} (ang. \textit{diamond property}), której notabene nie ma relacja $\to_\beta$ (czego dowodzi przykład \ref{eq:beta-reduction}). Jeśli dopełnienie przechodnio-zwrotne relacji ma własność rombu, to mówimy, że relacja ta jest \vocab{konfluentna}. Powyższe twierdzenie mówi więc, że relacja $\to_\beta$ jest konfluentna.
 
 \begin{figure}[H]
     \centering
@@ -88,14 +113,19 @@ Jest to jedno z ważniejszych twierdzeń rachunku lambda, mówiące o tym, że r
         \node (P) at (-2, -2) {$P$};
         \node (Q) at (2, -2) {$Q$};
         \node (X) at (0, -4) {$\cdot$};
-        \draw[->>] (M) to node[above] {\footnotesize$\beta$} (P);
-        \draw[->>] (M) to node[above] {\footnotesize$\beta$} (Q);
-        \draw[->>] (P) to node[above] {\footnotesize$\beta$} (X);
-        \draw[->>] (Q) to node[above] {\footnotesize$\beta$} (X);
+        \draw[->>] (M) to node[above left] {\footnotesize$\beta$} (P);
+        \draw[->>] (M) to node[above right] {\footnotesize$\beta$} (Q);
+        \draw[->>] (P) to node[below left] {\footnotesize$\beta$} (X);
+        \draw[->>] (Q) to node[below right] {\footnotesize$\beta$} (X);
     \end{tikzpicture}
-    \caption{Ilustracja do twierdzenia Churcha-Rossera.}
+    \caption{Własność rombu relacji $\toto_\beta$.}
     \label{fig:church-rosser}
 \end{figure}
+
+Prostym wnioskiem z tego twierdzenia jest fakt, że każdy term ma co najwyżej jedną postać normalną, to znaczy pozbawioną $\beta$-redeksów.
+Dlaczego \emph{co najwyżej}, a nie \emph{dokładnie}? Na przykład term
+\[ \symbf{\Omega} \coloneqq \left(\lambda x\ldotp xx\right)\left(\lambda x\ldotp xx\right) \]
+posiada tylko jeden $\beta$-redeks, którego redukcja prowadzi do termu $\symbf{\Omega}$ (co Czytelnik raczy sprawdzić), czyli $\symbf{\Omega} \to_\beta \symbf{\Omega}$. Term $\symbf{\Omega}$ nie ma więc postaci normalnej.
 
 \begin{remark}[Rachunek lambda jako teoria równościowa]
     Rachunek lambda z $\beta$-redukcją można potraktować jako teorię równościową (zwaną teorią $\lambda\beta$), czyli zbiór formuł zamknięty ze względu na reguły wnioskowania. Czytelnik zainteresowany logiką formalną może zastanowić się, jakie reguły wnioskowania są potrzebne oraz co daje nam opisana niżej $\eta$-redukcja (teoria $\lambda\beta\eta$).
@@ -103,9 +133,24 @@ Jest to jedno z ważniejszych twierdzeń rachunku lambda, mówiące o tym, że r
 
 \subsection{Eta-redukcja}
 
+\vocab{$\eta$-redukcja} to taka relacja $\to_\eta$ w zbiorze termów $\Lambda$, że $M \to_\eta N$, gdy \vocab{$\eta$-redeks} postaci $\lambda x\ldotp Px$ w termie M zostaje zastąpiony przez $P$ w termie $N$, zakładając $x \notin \FV(P)$.
 
+Tak jak poprzednio, dokmnięcie przechodnio-zwrotne relacji $\to_\eta$ oznaczamy przez $\toto_\eta$. Ponadto, sumę relacji $\to_\beta$ i $\to_\eta$ oznaczamy przez $\to_{\beta\eta}$, a jej domknięcie przechodnio-zwrotne przez $\toto_{\beta\eta}$.
+
+\todo[inline]{Konfuentność $\to_\eta$?}
 
 W tym miejscu kończymy krótkie wprowadzenie do rachunku lambda, chociaż nie można powiedzieć, że temat został wyczerpany chociaż w najmniejszym stopniu. Zaintrygowany Czytelnik może przeczytać więcej o kombinatorach punktu stałego, drzewach Böhma czy wreszcie reprezentowaniu obliczeń maszyny Turinga za pomocą rachunku lambda.
+
+\subsection{Kilka ćwiczeń}
+\todo{zdefiniować co znaczy $=$}
+
+\begin{problem}
+    Znajdź term $P$ taki, że $Px = P$.
+\end{problem}
+
+\begin{problem}
+    Znajdź term $P$ taki, że $Px = xP$.
+\end{problem}
 
 \section{Teoria typów}
 
@@ -114,7 +159,6 @@ Zajmiemy się teraz sposobem typowania rachunku lambda wprowadzonym przez Alonzo
 
 
 Teoria zbiorów służy za podstawę matematyki, ponieważ oferuje informacje semantyczne, np.
-\marginalia{Stwierdzenie prawdziwości tego zdania wymaga przeprowadzenia dowodu małego twierdzenie Fermata oraz pierwszości liczby $7$.}
 \[ 7 \in \left\{n \in \NN \mid \forall a \in \NN, a^n \equiv a \pmod{n} \right\}. \]
 Ze skonstruowanych w ten sposób zbiorów łatwo odczytać interesujące nas własności, trudniej jednak dowieść ich prawdziwości.
 Z drugiej strony teoria typów oferuje (uboższe na pierwszy rzut oka) informacje syntaktyczne, np.
