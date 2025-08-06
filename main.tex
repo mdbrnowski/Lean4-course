@@ -1,26 +1,31 @@
 % arara: latexmk: { engine: lualatex, options: [-synctex=1, -aux-directory=./build] }
 \documentclass[polish,pretty]{angav}
 
-\title{Lean i teoria typów}
+\title{Lean -- wprowadzenie}
 \author{Michał Dobranowski}
 \date{\today}
+
+\setmonofont{JetBrainsMono}[Scale=0.85,Contextuals=AlternateOff]  % disable ligatures
 
 \usepackage{ebproof}
 \newcommand{\toto}{\twoheadrightarrow}
 \newcommand{\FV}{\opname{FV}}
+\newcommand{\Lean}[1]{\mintinline[fontsize=\normalsize]{lean4}{#1}}
+\newcommand{\centerLean}[2][]{\begin{center}\Lean{#2}#1\end{center}}
 \tikzset{>=to}
 
 \begin{document}
 \maketitle
 \tableofcontents
+\newpage
 
-\section{Wstęp}
+\section{Wstęp teoretyczny}
 
 Aby zrozumieć, dlaczego systemowi wspomagającego dowodzenie (ang. \textit{proof assistant}) możemy ufać bardziej niż tuszowi na papierze, należy zrozumieć narzędzia oferowane przez teorię typów, na której zbudowany jest każdy znany autorowi tego typu system.
 Z kolei aby zrozumieć teorię typów, niezbędnym narzędziem jest rachunek lambda, którym zajmiemy się na samym początku.
 Chociaż ten kurs nigdy nie miał być teoretyczny, zdaniem autora formalizmy dotyczące (typowanego) rachunku lambda są niezwykle ciekawe, więc w odpowiednich miejscach Czytelnik jest zachęcany do pogłębienia wiedzy, czy też przeprowadzenia, tudzież przeczytania, dowodów przytaczanych twierdzeń.
 
-\section{Rachunek lambda}
+\subsection{Rachunek lambda}
 
 Rachunek lambda to język złożony z termów, z których każdy to:
 \begin{itemize}
@@ -56,7 +61,7 @@ Term nazywamy \vocab{termem zamkniętym} lub \vocab{kombinatorem}, jeśli $\FV(M
     \end{align*}
 \end{remark}
 
-\subsection{Alfa-konwersja}
+\subsubsection*{Alfa-konwersja}
 
 \vocab{$\alpha$-konwersja} to przekształcenie termu, które polega na zmianie nazwy zmiennej (unikając kolizji oznaczeń zmiennych). Wprowadzamy relację równoważności $\equiv_\alpha$ w zbiorze termów $\Lambda$ w ten sposób, że dane dwa termy $M$ i $N$ są równoważne, jeśli można otrzymać jeden z drugiego poprzez (wielokrotne) $\alpha$-konwersje. Na przykład:
 \[ a (\lambda b\ldotp bc) \equiv_\alpha a (\lambda d\ldotp dc), \]
@@ -73,10 +78,10 @@ Od tej pory utożsamiamy ze sobą termy różniące się jedynie nazwami zmienny
 Będziemy stosować dosyć uniwersalny zapis $M[x \coloneqq N]$ na term, który powstał z termu $M$ poprzez zastąpienie wszystkich \emph{wolnych} wystąpień zmiennej $x$ termem $N$.
 Zakładamy przy tym, że żadna zmienna wolna w $N$ nie zacznie być związana w $M[x \coloneqq N]$ (ponownie unikamy kolizji oznaczeń).
 
-\subsection{Beta-redukcja}
+\subsubsection*{Beta-redukcja}
 
 \vocab{$\beta$-redukcja} to taka relacja $\to_\beta$ w zbiorze termów $\Lambda$, że $M \to_\beta N$, gdy \vocab{$\beta$-redeks} postaci $(\lambda x\ldotp P)Q$ w termie $M$ zostaje zastąpiony przez $P[x \coloneqq Q]$ w termie $N$.
-Relacja $\toto_\beta$ to domknięcie przechodnio-zwrotne relacji $\to_\beta$ (czyli najmniejsza relacja przechodnia i zwrotna, która zawiera relację $\to_\beta$).
+Relacja $\toto_\beta$ to domknięcie przechodnio-zwrotne relacji $\to_\beta$ (czyli najmniejsza relacja przechodnia i zwrotna, która zawiera relację $\to_\beta$), a $=_\beta$ to jej domknięcie równoważnościowe.
 Piszemy $M \downarrow_\beta N$, jeśli istnieje term $P$ taki, że $M \toto_\beta P$ i $N \toto_\beta P$.
 
 Jeśli w termie występuje więcej niż jeden $\beta$-redeks, to $\beta$-redukcja nie jest deterministyczna -- możemy wybrać dowolny z nich i wykonać redukcję.
@@ -131,7 +136,7 @@ posiada tylko jeden $\beta$-redeks, którego redukcja prowadzi do termu $\symbf{
     Rachunek lambda z $\beta$-redukcją można potraktować jako teorię równościową (zwaną teorią $\lambda\beta$), czyli zbiór formuł zamknięty ze względu na reguły wnioskowania. Czytelnik zainteresowany logiką formalną może zastanowić się, jakie reguły wnioskowania są potrzebne oraz co daje nam opisana niżej $\eta$-redukcja (teoria $\lambda\beta\eta$).
 \end{remark}
 
-\subsection{Eta-redukcja}
+\subsubsection*{Eta-redukcja}
 
 \vocab{$\eta$-redukcja} to taka relacja $\to_\eta$ w zbiorze termów $\Lambda$, że $M \to_\eta N$, gdy \vocab{$\eta$-redeks} postaci $\lambda x\ldotp Px$ w termie M zostaje zastąpiony przez $P$ w termie $N$, zakładając $x \notin \FV(P)$.
 
@@ -141,18 +146,20 @@ Tak jak poprzednio, dokmnięcie przechodnio-zwrotne relacji $\to_\eta$ oznaczamy
 
 W tym miejscu kończymy krótkie wprowadzenie do rachunku lambda, chociaż nie można powiedzieć, że temat został wyczerpany chociaż w najmniejszym stopniu. Zaintrygowany Czytelnik może przeczytać więcej o kombinatorach punktu stałego, drzewach Böhma czy wreszcie reprezentowaniu obliczeń maszyny Turinga za pomocą rachunku lambda.
 
-\subsection{Kilka ćwiczeń}
-\todo{zdefiniować co znaczy $=$}
+\subsubsection*{Kilka ćwiczeń}
+
+W poniższych ćwiczeniach warto wykorzystać poznany wcześniej kombinator $\symbf{\Omega}$ lub kombinator $\symbf{Y} \coloneqq \lambda f\ldotp (\lambda x\ldotp f (xx)) (\lambda x\ldotp f (xx))$ o tej ciekawej własności, że dla każdego termu $F \in \Lambda$ zachodzi
+\[ F(\symbf{Y}(F)) =_\beta \symbf{Y}(F). \]
 
 \begin{problem}
-    Znajdź term $P$ taki, że $Px = P$.
+    Znajdź term $P$ taki, że $Px =_\beta P$.
 \end{problem}
 
 \begin{problem}
-    Znajdź term $P$ taki, że $Px = xP$.
+    Znajdź term $P$ taki, że $Px =_\beta xP$.
 \end{problem}
 
-\section{Teoria typów}
+\subsection{Teoria typów}
 
 Zajmiemy się teraz sposobem typowania rachunku lambda wprowadzonym przez Alonzo Churcha (istnieje również alternatywna, równie popularna, wersja wprowadzona przez Haskella Curry'ego).
 
@@ -165,7 +172,7 @@ Z drugiej strony teoria typów oferuje (uboższe na pierwszy rzut oka) informacj
 \[ 1 + (2 \cdot 3) : \NN, \]
 za to nie potrzebuje \emph{dowodu}, a jedynie \emph{obliczenia} zgodnie z danymi regułami.
 
-\subsection{Izomorfizm Curry'ego-Howarda}
+\subsubsection*{Izomorfizm Curry'ego-Howarda}
 
 Izomorfizm Curry'ego-Howarda to twierdzenie, które łączy logikę i teorię typów.
 Mówi ono, że jeśli formułom logicznym przypiszemy odpowiednie typy, a dowodom tych formuł przypiszemy odpowiednie termy, to otrzymamy izomorfizm postaci:
@@ -173,19 +180,107 @@ Mówi ono, że jeśli formułom logicznym przypiszemy odpowiednie typy, a dowodo
 W ten sposób możemy przepisać formułę logiczną do postaci typu i udowodnić ją, konstruując term tego typu.
 W tym właśnie procesie przydaje się oprogramowanie takie jak Lean.
 
-\section{Lean}
+\todo[inline]{Dokończyć opis izomorfizmu Curry'ego-Howarda oraz całą sekcję o teorii typów.}
+
+\section{Podstawy dowodzenia w Lean}
+
+\todo[inline]{wyjaśnić theorem, example, nawiasy klamrowe i okrągłe}
+
+\subsection{Rachunek zdań i pierwsze taktyki}
+
+\subsubsection*{Taktyki \texttt{intro}, \texttt{exact} i \texttt{apply}}
+
+Jeśli cel dowodzenia znajduje się wśród założeń, to wystarczy go wskazać za pomocą taktyki \Lean{exact}. Jeśli cel jest w postaci \Lean{P → Q}, to możemy użyć taktyki \Lean{intro}, aby wprowadzić do dowodu założenie \Lean{P} i zmienić cel na \Lean{Q}.
+\begin{minted}{lean4}
+example {P : Prop} (h : P) : P := by
+  exact h
+
+example {P : Prop} : P → P := by
+  intro h
+  exact h
+\end{minted}
+
+Jeśli celem jest \Lean{Q}, a mamy wśród założeń \Lean{P → Q}, to możemy użyć taktyki \Lean{apply}, aby zmienić cel na \Lean{P}. Możemy stosować również aplikację znaną z (typowanego) rachunku lambda.
+\begin{minted}{lean4}
+example {P Q : Prop} (h₁ : P → Q) (h₂ : P) : Q := by
+  apply h₁
+  exact h₂
+
+example {P Q : Prop} (h₁ : P → Q) (h₂ : P) : Q := by
+  exact h₁ h₂
+\end{minted}
+
+\subsubsection*{Koniunkcja i alternatywa}
+
+W Lean istnieje struktura \Lean{And}, której jedynym konstrukturem jest
+\centerLean[.]{And.intro {a b : Prop} (left : a) (right : b) : a ∧ b}
+Jako że \Lean{And.intro} ma typ \Lean{a → b → a ∧ b}, to świetnie nadaje się do użycia z \Lean{apply}, które wprowadzi dwa cele (do rozwiązania jeden po drugim).
+
+Jeśli chcemy w ten sposób użyć konstruktora dowolnej struktury, to możemy użyć taktyki \Lean{constructor}.
 
 \begin{minted}{lean4}
-def add (x y : ℕ) : ℕ := x + y
+example {P Q : Prop} (hp : P) (hq : Q) : P ∧ Q := by
+  apply And.intro
+  · exact hp
+  · exact hq
 
-theorem add_comm (x y : ℕ) : add x y = add y x := by
-  induction x with
-  | zero => simp [add]
-  | succ x ih => simp [add, ih]
+example {P Q : Prop} (hp : P) (hq : Q) : P ∧ Q := by
+  constructor
+  · exact hp
+  · exact hq
 
-
-theorem add_assoc (x y z : ℕ) : add (add x y) z = add x (add y z) := by
-  sorry
+example {P Q : Prop} (h : P ∧ Q) : P := by
+  exact h.left
 \end{minted}
+
+Podobnie istnieje struktura \Lean{Or}, której konstruktorami są
+\centerLean{inl {a b : Prop} (h : a) : a ∨ b}
+oraz
+\centerLean[.]{inr {a b : Prop} (h : b) : a ∨ b}
+Aby ich użyć, skorzystamy z taktyki \Lean{cases} lub \Lean{rcases} (które rekurencyjnie wywołuje \Lean{cases} zgodnie z podanym wzorem).
+\begin{minted}{lean4}
+example {P Q R : Prop} (hpq : P ∨ Q) (hpr : P → R) (hqr : Q → R) : R := by
+  cases hpq with
+  | inl hp =>
+    apply hpr
+    exact hp
+  | inr hq =>
+    apply hqr
+    apply hq
+
+example {P Q R : Prop} (hpq : P ∨ Q) (hpr : P → R) (hqr : Q → R) : R := by
+  rcases hpq with hp | hq
+  · apply hpr
+    exact hp
+  · apply hqr
+    apply hq
+\end{minted}
+
+Taktyka \Lean{rcases} może się przydać również przy koniunkcjach i bardziej złożonych zdaniach, na przykład:
+\begin{minted}{lean4}
+example {P Q R S : Prop} (h : S ∧ R ∧ P ∨ S ∧ (Q ∧ R)) : R := by
+  rcases h with ⟨_, hr, _⟩ | ⟨_, ⟨_, hr⟩⟩
+  · exact hr
+  · exact hr
+\end{minted}
+
+Jeśli alternatywa jest naszym celem, a nie założeniem, to przydatne będą taktyki \Lean{left} i \Lean{right}.
+
+\begin{minted}{lean4}
+example {P Q : Prop} (h : P) : P ∨ Q := by
+  left
+  exact h
+\end{minted}
+
+\begin{remark}
+    Bardziej dokładnie, taktyka \Lean{constructor} używa pierwszego pasującego konstruktora struktury, a taktyki \Lean{left} i \Lean{right} używają odpowiednio pierwszego i drugiego konstruktora struktury, która ma dokładnie dwa konstruktory. Nie są one przypisane do struktur \Lean{And} i \Lean{Or}. W szczególności, zamiast \Lean{left} zawsze można używać \Lean{constructor}, ale sensowność takiego działania pozostawiamy do oceny Czytelnikowi.
+\end{remark}
+
+\subsubsection*{Nawiasowanie}
+
+\subsubsection*{Negacja}
+
+\subsubsection*{Taktyki \texttt{assumption}, \texttt{contradiction}, \texttt{trivial} oraz \texttt{<;>}}
+
 
 \end{document}
