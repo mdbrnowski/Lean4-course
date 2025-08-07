@@ -282,5 +282,43 @@ example {P Q : Prop} (h : P) : P ∨ Q := by
 
 \subsubsection*{Taktyki \texttt{assumption}, \texttt{contradiction}, \texttt{trivial} oraz \texttt{<;>}}
 
+Poniższy przykład (reguła \textit{modus tollendo ponens}) Czytelnik powinien już być w stanie zrozumieć. Pokażemy, jak udowodnić go trochę prościej.
+\begin{minted}{lean4}
+example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
+  rcases h with hp | hq
+  · apply False.elim (not_p hp)
+  · exact hq
+\end{minted}
+
+Zamiast \Lean{exact hq} możemy użyć taktyki \Lean{assumption}, która sprawdza, czy cel jest wśród założeń (nie musimy go wskazywać). Zamiast \Lean{apply False.elim} możemy użyć taktyki \Lean{contradiction}, która sprawdza, czy wśród założeń znajdują się dwa trywialne sprzeczne stwierdzenia.
+\begin{minted}{lean4}
+example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
+  rcases h with hp | hq
+  · contradiction
+  · assumption
+\end{minted}
+
+Jeśli nie używamy wprowadzonych założeń (w przykładzie \Lean{hp} i \Lean{hq}), to nie musimy ich nazywać -- dalej będą one dostępne dla taktyk \Lean{assumption} i \Lean{contradiction}.
+\begin{minted}{lean4}
+example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
+  cases h
+  · contradiction
+  · assumption
+\end{minted}
+
+Istnieje również taktyka \Lean{trivial}, która próbuje rozwiązać cel używając kilku prostych taktyk, jak \Lean{assumption}, \Lean{contradiction} czy \Lean{rfl} (użyteczna przy równościach).
+\begin{minted}{lean4}
+example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
+  cases h
+  · trivial
+  · trivial
+\end{minted}
+
+Jeśli chcemy użyć tej samej taktyki dla różnych przypadków, to możemy użyć \Lean{<;>} w następujący sposób:
+\begin{minted}{lean4}
+example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
+  cases h <;> trivial
+\end{minted}
+
 
 \end{document}
