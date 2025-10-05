@@ -1,7 +1,7 @@
 % arara: latexmk: { engine: lualatex, options: [-synctex=1, -aux-directory=./build] }
 \documentclass[polish,pretty]{angav}
 
-\title{Lean -- wprowadzenie}
+\title{Lean \& ITP}
 \author{Michał Dobranowski}
 \date{\today}
 
@@ -183,6 +183,15 @@ W tym właśnie procesie przydaje się oprogramowanie takie jak Lean.
 \todo[inline]{Dokończyć opis izomorfizmu Curry'ego-Howarda oraz całą sekcję o teorii typów.}
 
 \section{Podstawy dowodzenia w Lean}
+
+\subsection{Środowisko}
+
+Polecam używać VS Code z rozszerzeniem \textbf{Lean 4} lub Neovim z rozszerzeniem \textbf{lean.nvim}.
+Aby rozpocząć pracę, należy stworzyć projekt za pomocą
+\begin{minted}{bash}
+lake new project-name math-lax
+\end{minted}
+który od razu dodaje Mathlib do wymaganych zależności.
 
 \todo[inline]{wyjaśnić theorem, example, nawiasy klamrowe i okrągłe}
 
