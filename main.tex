@@ -21,9 +21,148 @@
 
 \section{Wstęp teoretyczny}
 
-Aby zrozumieć, dlaczego systemowi wspomagającego dowodzenie (ang. \textit{proof assistant}) możemy ufać bardziej niż tuszowi na papierze, należy zrozumieć narzędzia oferowane przez teorię typów, na której zbudowany jest każdy znany autorowi tego typu system.
-Z kolei aby zrozumieć teorię typów, niezbędnym narzędziem jest rachunek lambda, którym zajmiemy się na samym początku.
-Chociaż ten kurs nigdy nie miał być teoretyczny, zdaniem autora formalizmy dotyczące (typowanego) rachunku lambda są niezwykle ciekawe, więc w odpowiednich miejscach Czytelnik jest zachęcany do pogłębienia wiedzy, czy też przeprowadzenia, tudzież przeczytania, dowodów przytaczanych twierdzeń.
+Aby zrozumieć, dlaczego systemowi wspomagającego dowodzenie (ang. \textit{proof assistant}) możemy ufać bardziej niż tuszowi na papierze, należy zrozumieć narzędzia oferowane przez logikę oraz teorię typów, na których zbudowany jest każdy znany autorowi tego typu system.
+Z kolei aby zrozumieć teorię typów, niezbędnym narzędziem jest rachunek lambda.
+Chociaż ten kurs nigdy nie miał być teoretyczny, zdaniem autora formalizmy dotyczące (typowanego) rachunku lambda są niezwykle ciekawe, więc w odpowiednich miejscach Czytelnik jest zachęcany do pogłębienia wiedzy, w tym też przeprowadzenia lub przeczytania dowodów przytaczanych twierdzeń.
+
+\subsection{Logika intuicjonistyczna}
+
+Logika intuicjonistyczna (konstruktywna) to system logiczny będący alternatywą dla logiki klasycznej. Nie różni się od niej składnią, ale regułami wnioskowania:
+
+\[
+\begin{prooftree}
+    \infer0[(Ax)]{\Gamma,A\vdash A}
+\end{prooftree}
+\qquad
+\begin{prooftree}
+    \hypo{\Gamma\vdash \bot}
+    \infer1[($\bot\!$ E)]{\Gamma\vdash A}
+\end{prooftree}
+\]
+
+\[
+\begin{prooftree}
+    \hypo{\Gamma\vdash A}
+    \hypo{\Gamma\vdash B}
+    \infer2[($\land\!$ I)]{\Gamma\vdash A \land B}
+\end{prooftree}
+\qquad
+\begin{prooftree}
+    \hypo{\Gamma\vdash A \land B}
+    \infer1[($\land\!$ E1)]{\Gamma\vdash A}
+\end{prooftree}
+\qquad
+\begin{prooftree}
+    \hypo{\Gamma\vdash A \land B}
+    \infer1[($\land\!$ E2)]{\Gamma\vdash B}
+\end{prooftree}
+\]
+
+\[
+\begin{prooftree}
+    \hypo{\Gamma\vdash A}
+    \infer1[($\lor\!$ I1)]{\Gamma\vdash A \lor B}
+\end{prooftree}
+\qquad
+\begin{prooftree}
+    \hypo{\Gamma\vdash A}
+    \infer1[($\lor\!$ I2)]{\Gamma\vdash B \lor A}
+\end{prooftree}
+\qquad
+\begin{prooftree}
+    \hypo{\Gamma\vdash A \lor B}
+    \hypo{\Gamma,A\vdash C}
+    \hypo{\Gamma,B\vdash C}
+    \infer3[($\lor\!$ E)]{\Gamma\vdash C}
+\end{prooftree}
+\]
+
+\[
+\begin{prooftree}
+    \hypo{\Gamma,A\vdash B}
+    \infer1[($\to\!$ I)]{\Gamma\vdash A \to B}
+\end{prooftree}
+\qquad
+\begin{prooftree}
+    \hypo{\Gamma\vdash A \to B}
+    \hypo{\Gamma\vdash A}
+    \infer2[($\to\!$ E)]{\Gamma\vdash B}
+\end{prooftree}
+\]
+
+Oprócz tego, definiujemy negację jako $\neg A \coloneqq A \to \bot$. Dzięki tej definicji oraz regule ($\to\!$~E) możemy wywieść
+\[
+\begin{prooftree}
+    \hypo{\Gamma\vdash A}
+    \hypo{\Gamma\vdash \neg A}
+    \infer2[($\neg\!$ E)]{\Gamma\vdash \bot}
+\end{prooftree}
+\]
+
+\begin{example}
+    Pokaż, że w IRZ zachodzi \vocab{słabe prawo podwójnej negacji}, czyli $A \to \neg\neg A$.
+\end{example}
+\begin{solution}
+    Z definicji negacji mamy $\neg\neg A = (A \to \bot) \to \bot$, więc musimy pokazać $A \to ((A\to\bot) \to \bot)$.
+    \[
+    \begin{prooftree}
+        \hypo{A, A\to\bot \vdash A\to\bot}
+        \hypo{A, A\to\bot \vdash A}
+        \infer2[($\to\!$ E)]{A, A\to\bot \vdash \bot}
+        \infer1[($\to\!$ I)]{A \vdash (A\to\bot) \to \bot}
+        \infer1[($\to\!$ I)]{\vdash A \to ((A\to\bot) \to \bot)}
+    \end{prooftree}
+    \]
+\end{solution}
+
+\begin{example}
+    Pokaż, że w IRZ zachodzi \vocab{prawo kontrapozycji}, czyli $(A \to B) \to (\neg B \to \neg A)$.
+\end{example}
+\begin{solution}
+    Z definicji negacji mamy $\neg B = B \to \bot$ oraz $\neg A = A \to \bot$, więc musimy pokazać $(A \to B) \to ((B\to\bot) \to (A\to\bot))$.
+    \[
+    \begin{prooftree}
+        \hypo{A\to B, B \to \bot, A \vdash B \to \bot}
+        \hypo{A\to B, B \to \bot, A \vdash A \to B}
+        \hypo{A\to B, B \to \bot, A \vdash A}
+        \infer2[($\to\!$ E)]{A \to B, B \to \bot, A \vdash B}
+        \infer2[($\to\!$ E)]{A \to B, B \to \bot, A \vdash \bot}
+        \infer1[($\to\!$ I)]{A \to B, B \to \bot \vdash A\to\bot}
+        \infer1[($\to\!$ I)]{A \to B \vdash (B \to \bot) \to (A \to \bot)}
+        \infer1[($\to\!$ I)]{\vdash (A \to B) \to ((B \to \bot) \to (A \to \bot))}
+    \end{prooftree}
+    \]
+\end{solution}
+
+Dokładając do reguł wnioskowania IRZ \vocab{silne prawo podwójnej negacji} ($\neg\neg A \to A$) lub \vocab{prawo wyłączonego środka} ($A \lor \neg A$),  otrzymujemy logikę klasyczną.
+W przypadku prawa podwójnej negacji jest to oczywiste. W przypadku prawa wyłączonego środka (EM) można to pokazać następująco:
+\[
+\resizebox{\hsize}{!}{
+\begin{prooftree}
+    \infer0[(\textcolor{AccColor1}{EM})]{(A \to \bot) \to \bot \vdash A \lor (A \to \bot)}
+    \hypo{(A \to \bot) \to \bot, A \vdash A}
+    \hypo{\Gamma \vdash (A \to \bot) \to \bot}
+    \hypo{\Gamma \vdash A \to \bot}
+    \infer2[($\to\!$ E)]{\Gamma \vdash \bot}
+    \infer1[($\bot\!$ E)]{\Gamma \vdash A}
+    \infer3[($\lor\!$ E)]{(A \to \bot) \to \bot \vdash A}
+    \infer1[($\to\!$ I)]{\vdash (A \to \bot) \to \bot \to A}
+\end{prooftree}\
+}
+\]
+gdzie $\Gamma = \{(A \to \bot) \to \bot, A \to \bot\}$.
+
+\begin{problem}
+    Stwierdzić, które z czterech praw de Morgana są dowodliwe w IRZ.
+\end{problem}
+
+\begin{remark*}[ciekawostka]
+    Istnieją tautologie KRZ, które nie są dowodliwe w IRZ, ale po dodaniu do IRZ jako aksjomaty nie prowadzą do logiki klasycznej, tworząc logiki \enquote{pomiędzy} intuicjonistyczną i klasyczną. Przykłady:
+    \begin{itemize}
+        \item IRZ + $(\neg A \lor \neg\neg A)$\footnote{słabe prawo wyłączonego środka} --- logika Jankova (de Morgana), w której zachodzą wszystkie cztery prawa de Morgana,
+        \item IRZ + $((A \to B) \lor (B \to A))$ --- logika Gödla-Dummeta, w której wartościowania formuł można interpretować jako liczby z przedziału $[0,1]$.
+    \end{itemize}
+\end{remark*}
 
 \subsection{Rachunek lambda}
 
