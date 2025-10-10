@@ -22,13 +22,12 @@
 
 \section{Wstęp teoretyczny}
 
-Aby zrozumieć, dlaczego systemowi wspomagającego dowodzenie (ang. \textit{proof assistant}) możemy ufać bardziej niż tuszowi na papierze, należy zrozumieć narzędzia oferowane przez logikę oraz teorię typów, na których zbudowany jest każdy znany autorowi tego typu system.
-Z kolei aby zrozumieć teorię typów, niezbędnym narzędziem jest rachunek lambda.
+Aby zrozumieć, dlaczego systemowi wspomagającego dowodzenie (ang. \textit{proof assistant}) możemy ufać bardziej niż tuszowi na papierze, należy zrozumieć narzędzia oferowane przez logikę, rachunek lambda oraz teorię typów, na których zbudowany jest każdy znany autorowi tego typu system.
 Chociaż ten kurs nigdy nie miał być teoretyczny, zdaniem autora formalizmy dotyczące (typowanego) rachunku lambda są niezwykle ciekawe, więc w odpowiednich miejscach Czytelnik jest zachęcany do pogłębienia wiedzy, w tym też przeprowadzenia lub przeczytania dowodów przytaczanych twierdzeń.
 
 \subsection{Logika intuicjonistyczna}
 
-Logika intuicjonistyczna (konstruktywna) to system logiczny będący alternatywą dla logiki klasycznej. Nie różni się od niej składnią, ale regułami wnioskowania. Fałsz oznaczamy przez $\bot$, a pisząc $\Gamma \vdash A$ mamy na myśli, że formuła $A$ jest dowodliwa z założeń $\Gamma$.
+Logika intuicjonistyczna (konstruktywna) to system logiczny będący alternatywą dla logiki klasycznej. Nie różni się od niej składnią, ale regułami wnioskowania. Fałsz oznaczamy przez $\bot$, prawdę przez $\top$, a pisząc $\Gamma \vdash A$ mamy na myśli, że formuła $A$ jest dowodliwa z założeń $\Gamma$.
 
 \begin{figure}[H]
     \[
@@ -174,7 +173,7 @@ gdzie $\Gamma = \{(A \to \bot) \to \bot, A \to \bot\}$.
     \end{itemize}
 \end{remark*}
 
-Skoro zbiór reguł wnioskowania IRZ jest podzbiorem zbioru reguł wnioskowania KRZ, to każda formuła dowodliwa KRZ jest również dowodliwa w IRZ.
+Skoro zbiór reguł wnioskowania IRZ jest podzbiorem zbioru reguł wnioskowania KRZ, to każda formuła dowodliwa IRZ jest również dowodliwa w KRZ.
 
 \subsubsection{Semantyka}
 
@@ -196,20 +195,20 @@ Wtedy
 Można przy pomocy takiej semantyki pokazać, że prawo wyłączonego środka nie jest dowodliwe w IRZ. Pod $A$ możemy podstawić np. zbiór $(0, \infty)$, wtedy
 \[ \llbracket A \lor \neg A \rrbracket = \llbracket A \rrbracket \cup \llbracket \neg A \rrbracket = \llbracket A \rrbracket \cup \opname{int}\left(\llbracket A \rrbracket^\complement\right) = (0, \infty) \cup (-\infty, 0) \neq \RR \]
 
-\paragraph{Semantyka kraty dystrybucyjnej}
+\paragraph{Semantyka kraty dystrybutywnej}
 Krata to zbiór częściowo uporządkowany, w którym istnieją kresy dolne i górne dowolnych par elementów. Definiujemy działania
 \begin{align*}
     a \land b &\coloneqq \inf\{a, b\}, \\
     a \lor b &\coloneqq \sup\{a, b\}.
 \end{align*}
 
-Dystrybucyjna krata to krata, w której zachodzą prawa rozdzielności:
+Krata dystrybutywna to krata, w której zachodzą prawa rozdzielności:
 \begin{align*}
     a \land (b \lor c) &= (a \land b) \lor (a \land c), \\
     a \lor (b \land c) &= (a \lor b) \land (a \lor c).
 \end{align*}
 
-Można udowodnić, że każda niepusta i skończona krata jest ograniczona, czyli posiada elementy najmniejszy i największy. Krata, która jest niepusta, skończona i dystrybucyjna posłuży nam do zdefiniowania semantyki:
+Można udowodnić, że każda niepusta i skończona krata jest ograniczona, czyli posiada elementy najmniejszy i największy. Krata, która jest niepusta, skończona i dystrybutywna posłuży nam do zdefiniowania semantyki:
 \begin{align*}
     \llbracket \bot \rrbracket &= \text{element najmniejszy}, \\
     \llbracket \top \rrbracket &= \text{element największy}, \\
