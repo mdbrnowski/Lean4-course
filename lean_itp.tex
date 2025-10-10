@@ -8,6 +8,7 @@
 \setmonofont{JetBrainsMono}[Scale=0.85,Contextuals=AlternateOff]  % disable ligatures
 
 \usepackage{ebproof}
+\usepackage{stmaryrd} % for \llbracket and \rrbracket
 \newcommand{\toto}{\twoheadrightarrow}
 \newcommand{\FV}{\opname{FV}}
 \newcommand{\Lean}[1]{\mintinline[fontsize=\normalsize]{lean4}{#1}}
@@ -27,68 +28,71 @@ Chociaż ten kurs nigdy nie miał być teoretyczny, zdaniem autora formalizmy do
 
 \subsection{Logika intuicjonistyczna}
 
-Logika intuicjonistyczna (konstruktywna) to system logiczny będący alternatywą dla logiki klasycznej. Nie różni się od niej składnią, ale regułami wnioskowania:
+Logika intuicjonistyczna (konstruktywna) to system logiczny będący alternatywą dla logiki klasycznej. Nie różni się od niej składnią, ale regułami wnioskowania. Fałsz oznaczamy przez $\bot$, a pisząc $\Gamma \vdash A$ mamy na myśli, że formuła $A$ jest dowodliwa z założeń $\Gamma$.
 
-\[
-\begin{prooftree}
-    \infer0[(Ax)]{\Gamma,A\vdash A}
-\end{prooftree}
-\qquad
-\begin{prooftree}
-    \hypo{\Gamma\vdash \bot}
-    \infer1[($\bot\!$ E)]{\Gamma\vdash A}
-\end{prooftree}
-\]
+\begin{figure}[H]
+    \[
+    \begin{prooftree}
+        \infer0[(Ax)]{\Gamma,A\vdash A}
+    \end{prooftree}
+    \qquad
+    \begin{prooftree}
+        \hypo{\Gamma\vdash \bot}
+        \infer1[($\bot\!$ E)]{\Gamma\vdash A}
+    \end{prooftree}
+    \]
 
-\[
-\begin{prooftree}
-    \hypo{\Gamma\vdash A}
-    \hypo{\Gamma\vdash B}
-    \infer2[($\land\!$ I)]{\Gamma\vdash A \land B}
-\end{prooftree}
-\qquad
-\begin{prooftree}
-    \hypo{\Gamma\vdash A \land B}
-    \infer1[($\land\!$ E1)]{\Gamma\vdash A}
-\end{prooftree}
-\qquad
-\begin{prooftree}
-    \hypo{\Gamma\vdash A \land B}
-    \infer1[($\land\!$ E2)]{\Gamma\vdash B}
-\end{prooftree}
-\]
+    \[
+    \begin{prooftree}
+        \hypo{\Gamma\vdash A}
+        \hypo{\Gamma\vdash B}
+        \infer2[($\land\!$ I)]{\Gamma\vdash A \land B}
+    \end{prooftree}
+    \qquad
+    \begin{prooftree}
+        \hypo{\Gamma\vdash A \land B}
+        \infer1[($\land\!$ E1)]{\Gamma\vdash A}
+    \end{prooftree}
+    \qquad
+    \begin{prooftree}
+        \hypo{\Gamma\vdash A \land B}
+        \infer1[($\land\!$ E2)]{\Gamma\vdash B}
+    \end{prooftree}
+    \]
 
-\[
-\begin{prooftree}
-    \hypo{\Gamma\vdash A}
-    \infer1[($\lor\!$ I1)]{\Gamma\vdash A \lor B}
-\end{prooftree}
-\qquad
-\begin{prooftree}
-    \hypo{\Gamma\vdash A}
-    \infer1[($\lor\!$ I2)]{\Gamma\vdash B \lor A}
-\end{prooftree}
-\qquad
-\begin{prooftree}
-    \hypo{\Gamma\vdash A \lor B}
-    \hypo{\Gamma,A\vdash C}
-    \hypo{\Gamma,B\vdash C}
-    \infer3[($\lor\!$ E)]{\Gamma\vdash C}
-\end{prooftree}
-\]
+    \[
+    \begin{prooftree}
+        \hypo{\Gamma\vdash A}
+        \infer1[($\lor\!$ I1)]{\Gamma\vdash A \lor B}
+    \end{prooftree}
+    \qquad
+    \begin{prooftree}
+        \hypo{\Gamma\vdash A}
+        \infer1[($\lor\!$ I2)]{\Gamma\vdash B \lor A}
+    \end{prooftree}
+    \qquad
+    \begin{prooftree}
+        \hypo{\Gamma\vdash A \lor B}
+        \hypo{\Gamma,A\vdash C}
+        \hypo{\Gamma,B\vdash C}
+        \infer3[($\lor\!$ E)]{\Gamma\vdash C}
+    \end{prooftree}
+    \]
 
-\[
-\begin{prooftree}
-    \hypo{\Gamma,A\vdash B}
-    \infer1[($\to\!$ I)]{\Gamma\vdash A \to B}
-\end{prooftree}
-\qquad
-\begin{prooftree}
-    \hypo{\Gamma\vdash A \to B}
-    \hypo{\Gamma\vdash A}
-    \infer2[($\to\!$ E)]{\Gamma\vdash B}
-\end{prooftree}
-\]
+    \[
+    \begin{prooftree}
+        \hypo{\Gamma,A\vdash B}
+        \infer1[($\to\!$ I)]{\Gamma\vdash A \to B}
+    \end{prooftree}
+    \qquad
+    \begin{prooftree}
+        \hypo{\Gamma\vdash A \to B}
+        \hypo{\Gamma\vdash A}
+        \infer2[($\to\!$ E)]{\Gamma\vdash B}
+    \end{prooftree}
+    \]
+    \caption{Reguły wnioskowania w intuicjonistycznym rachunku zdań (IRZ).}
+\end{figure}
 
 Oprócz tego, definiujemy negację jako $\neg A \coloneqq A \to \bot$. Dzięki tej definicji oraz regule ($\to\!$~E) możemy wywieść
 \[
@@ -134,6 +138,8 @@ Oprócz tego, definiujemy negację jako $\neg A \coloneqq A \to \bot$. Dzięki t
     \]
 \end{solution}
 
+\subsubsection{Związek z logiką klasyczną}
+
 Dokładając do reguł wnioskowania IRZ \vocab{silne prawo podwójnej negacji} ($\neg\neg A \to A$) lub \vocab{prawo wyłączonego środka} ($A \lor \neg A$),  otrzymujemy logikę klasyczną.
 W przypadku prawa podwójnej negacji jest to oczywiste. W przypadku prawa wyłączonego środka (EM) można to pokazać następująco:
 \[
@@ -153,6 +159,10 @@ W przypadku prawa podwójnej negacji jest to oczywiste. W przypadku prawa wyłą
 gdzie $\Gamma = \{(A \to \bot) \to \bot, A \to \bot\}$.
 
 \begin{problem}
+    Pokazać, że prawo wyłączonego środka nie jest dowodliwe w IRZ.
+\end{problem}
+
+\begin{problem}
     Stwierdzić, które z czterech praw de Morgana są dowodliwe w IRZ.
 \end{problem}
 
@@ -163,6 +173,73 @@ gdzie $\Gamma = \{(A \to \bot) \to \bot, A \to \bot\}$.
         \item IRZ + $((A \to B) \lor (B \to A))$ --- logika Gödla-Dummeta, w której wartościowania formuł można interpretować jako liczby z przedziału $[0,1]$.
     \end{itemize}
 \end{remark*}
+
+Skoro zbiór reguł wnioskowania IRZ jest podzbiorem zbioru reguł wnioskowania KRZ, to każda formuła dowodliwa KRZ jest również dowodliwa w IRZ.
+
+\subsubsection{Semantyka}
+
+Trochę zaniedbując formalizmy, skupimy się przez chwilę na wartościowaniach formuł logicznych. Możemy określić \vocab{semantykę} dla logiki klasycznej, przypisując formułom prawdziwym wartość $1$, a formułom fałszywym wartość $0$ (definiując przy okazji funkcje $\land, \lor, \to$). Dla logiki intuicjonistycznej jest to trudniejsze, ale i ciekawsze. Pokażemy dwa z (nieskończenie) wielu możliwych sposobów. Oba z nich są \vocab{algebrami Heytinga}, których nie będziemy tutaj definiować.
+
+\paragraph{Semantyka topologiczna}
+Możemy zdefiniować semantykę za pomocą topologii na $\RR$:
+\begin{align*}
+    \llbracket \bot \rrbracket &= \emptyset, \\
+    \llbracket \top \rrbracket &= \RR, \\
+    \llbracket A \land B \rrbracket &= \llbracket A \rrbracket \cap \llbracket B \rrbracket, \\
+    \llbracket A \lor B \rrbracket &= \llbracket A \rrbracket \cup \llbracket B \rrbracket, \\
+    \llbracket A \to B \rrbracket &= \opname{int}\left(\llbracket A \rrbracket^\complement \cup \llbracket B \rrbracket\right), \\
+    A &\coloneqq \text{dowolny otwarty podzbiór $\RR$}
+\end{align*}
+Wtedy
+\[ \llbracket \neg A \rrbracket = \llbracket A \to \bot \rrbracket = \opname{int}\left(\llbracket A \rrbracket^\complement \cup \emptyset\right) = \opname{int}\left(\llbracket A \rrbracket^\complement\right) \]
+
+Można przy pomocy takiej semantyki pokazać, że prawo wyłączonego środka nie jest dowodliwe w IRZ. Pod $A$ możemy podstawić np. zbiór $(0, \infty)$, wtedy
+\[ \llbracket A \lor \neg A \rrbracket = \llbracket A \rrbracket \cup \llbracket \neg A \rrbracket = \llbracket A \rrbracket \cup \opname{int}\left(\llbracket A \rrbracket^\complement\right) = (0, \infty) \cup (-\infty, 0) \neq \RR \]
+
+\paragraph{Semantyka kraty dystrybucyjnej}
+Krata to zbiór częściowo uporządkowany, w którym istnieją kresy dolne i górne dowolnych par elementów. Definiujemy działania
+\begin{align*}
+    a \land b &\coloneqq \inf\{a, b\}, \\
+    a \lor b &\coloneqq \sup\{a, b\}.
+\end{align*}
+
+Dystrybucyjna krata to krata, w której zachodzą prawa rozdzielności:
+\begin{align*}
+    a \land (b \lor c) &= (a \land b) \lor (a \land c), \\
+    a \lor (b \land c) &= (a \lor b) \land (a \lor c).
+\end{align*}
+
+Można udowodnić, że każda niepusta i skończona krata jest ograniczona, czyli posiada elementy najmniejszy i największy. Krata, która jest niepusta, skończona i dystrybucyjna posłuży nam do zdefiniowania semantyki:
+\begin{align*}
+    \llbracket \bot \rrbracket &= \text{element najmniejszy}, \\
+    \llbracket \top \rrbracket &= \text{element największy}, \\
+    \llbracket A \land B \rrbracket &= \llbracket A \rrbracket \land \llbracket B \rrbracket, \\
+    \llbracket A \lor B \rrbracket &= \llbracket A \rrbracket \lor \llbracket B \rrbracket, \\
+    \llbracket A \to B \rrbracket &= \sup\{c : c \land \llbracket A \rrbracket \leq \llbracket B \rrbracket\}, \\
+    A &\coloneqq \text{dowolny element kraty}
+\end{align*}
+Wtedy
+\[ \llbracket \neg A \rrbracket = \llbracket A \to \bot \rrbracket = \sup\{c : c \land \llbracket A \rrbracket \leq \llbracket \bot \rrbracket\} = \sup\{c : c \land \llbracket A \rrbracket = \llbracket \bot \rrbracket\} \]
+
+Biorąc przykładową kratę
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1, every node/.style={circle, fill=black, inner sep=2pt}]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (1,1);
+    \coordinate (C) at (2,0);
+    \coordinate (D) at (1,-1);
+    \coordinate (E) at (3,-1);
+    \coordinate (F) at (2,-2);
+
+    \draw (A)--(B)--(C)--(D)--(A);
+    \draw (C)--(E)--(F)--(D);
+
+    \foreach \p in {A,B,C,D,E,F}
+        \fill (\p) circle (2pt);
+\end{tikzpicture}
+\end{figure}
+możemy udowodnić, że prawo wyłączonego środka nie jest dowodliwe w IRZ. Dowód zostawiamy jako ćwiczenie dla Czytelnika.
 
 \subsection{Rachunek lambda}
 
