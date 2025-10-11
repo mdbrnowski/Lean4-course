@@ -27,7 +27,23 @@ Chociaż ten kurs nigdy nie miał być teoretyczny, zdaniem autora formalizmy do
 
 \subsection{Logika intuicjonistyczna}
 
-Logika intuicjonistyczna (konstruktywna) to system logiczny będący alternatywą dla logiki klasycznej. Nie różni się od niej składnią, ale regułami wnioskowania. Fałsz oznaczamy przez $\bot$, prawdę przez $\top$, a pisząc $\Gamma \vdash A$ mamy na myśli, że formuła $A$ jest dowodliwa z założeń $\Gamma$.
+Typowym przykładem ilustrującym różnicę między logiką klasyczną a intuicjonistyczną (konstruktywną) jest twierdzenie:
+\begin{displayquote}
+    Istnieją takie liczby niewymierne $a$ i $b$, że $a^b$ jest liczbą wymierną.
+\end{displayquote}
+oraz jego dowód:
+\begin{displayquote}
+    Jeśli $\sqrt{2}^{\sqrt{2}} \in \QQ$, to $a = b = \sqrt{2}$, w przeciwnym razie niech $a = \sqrt{2}^{\sqrt{2}}$ oraz $b = \sqrt{2}$, wtedy $a^b = 2 \in \QQ$.
+\end{displayquote}
+Dowód ten jest oczywiście słuszny na gruncie logiki klasycznej, ale nie jest konstruktywny, ponieważ dalej nie znamy odpowiednich liczb $a$ i $b$. W logice konstruktywnej zdanie jest prawdziwe, jeśli można podać jest \vocab{konstrukcję} (tzn. intuicyjny dowód), zgodnie z interpretacją Brouwera-Heytinga-Kolmogorowa:
+\begin{itemize}[noitemsep]
+    \item konstrukcja dla $A \land B$ to konstrukcja dla $A$ oraz konstrukcja dla $B$,
+    \item konstrukcja dla $A \lor B$ to konstrukcja dla $A$ lub konstrukcja dla $B$ wraz z zaznaczeniem, która z nich to jest,
+    \item konstrukcja dla $A \to B$ to przekształcenie każdej konstrukcji dla $A$ w konstrukcję dla $B$,
+    \item nie istnieje konstrukcja dla fałszu.
+\end{itemize}
+
+Formalnie, logika intuicjonistyczna to pewien system logiczny. Nie różni się od logiki klasycznej składnią, ale regułami wnioskowania. Fałsz oznaczamy przez $\bot$, prawdę przez $\top$, a pisząc $\Gamma \vdash A$ mamy na myśli, że formuła $A$ jest dowodliwa z założeń $\Gamma$.
 
 \begin{figure}[H]
     \[
@@ -177,7 +193,11 @@ Skoro zbiór reguł wnioskowania IRZ jest podzbiorem zbioru reguł wnioskowania 
 
 \subsubsection{Semantyka}
 
-Trochę zaniedbując formalizmy, skupimy się przez chwilę na wartościowaniach formuł logicznych. Możemy określić \vocab{semantykę} dla logiki klasycznej, przypisując formułom prawdziwym wartość $1$, a formułom fałszywym wartość $0$ (definiując przy okazji funkcje $\land, \lor, \to$). Dla logiki intuicjonistycznej jest to trudniejsze, ale i ciekawsze. Pokażemy dwa z (nieskończenie) wielu możliwych sposobów. Oba z nich są \vocab{algebrami Heytinga}, których nie będziemy tutaj definiować.
+Trochę zaniedbując formalizmy, skupimy się przez chwilę na wartościowaniach formuł logicznych.
+Możemy określić \vocab{semantykę} dla logiki klasycznej, przypisując formułom prawdziwym wartość $1$, a formułom fałszywym wartość $0$ (definiując przy okazji funkcje $\land, \lor, \to$).
+Dla logiki intuicjonistycznej jest to trudniejsze, ale i ciekawsze. Pokażemy dwa z (nieskończenie) wielu możliwych sposobów.
+Oba z nich są \vocab{algebrami Heytinga}, których nie będziemy tutaj definiować.
+Warto jednak wiedzieć, że formuła logiczna jest dowodliwa w IRZ wtedy i tylko wtedy, gdy jest prawdziwa w każdej algebrze Heytinga.
 
 \paragraph{Semantyka topologiczna}
 Możemy zdefiniować semantykę za pomocą topologii na $\RR$:
@@ -187,12 +207,12 @@ Możemy zdefiniować semantykę za pomocą topologii na $\RR$:
     \llbracket A \land B \rrbracket &= \llbracket A \rrbracket \cap \llbracket B \rrbracket, \\
     \llbracket A \lor B \rrbracket &= \llbracket A \rrbracket \cup \llbracket B \rrbracket, \\
     \llbracket A \to B \rrbracket &= \opname{int}\left(\llbracket A \rrbracket^\complement \cup \llbracket B \rrbracket\right), \\
-    A &\coloneqq \text{dowolny otwarty podzbiór $\RR$}
+    \llbracket A \rrbracket &= \text{dowolny otwarty podzbiór $\RR$}
 \end{align*}
 Wtedy
 \[ \llbracket \neg A \rrbracket = \llbracket A \to \bot \rrbracket = \opname{int}\left(\llbracket A \rrbracket^\complement \cup \emptyset\right) = \opname{int}\left(\llbracket A \rrbracket^\complement\right) \]
 
-Można przy pomocy takiej semantyki pokazać, że prawo wyłączonego środka nie jest dowodliwe w IRZ. Pod $A$ możemy podstawić np. zbiór $(0, \infty)$, wtedy
+Można przy pomocy takiej semantyki pokazać, że prawo wyłączonego środka nie jest dowodliwe w IRZ. Pod $\llbracket A \rrbracket$ możemy podstawić np. zbiór $(0, \infty)$, wtedy
 \[ \llbracket A \lor \neg A \rrbracket = \llbracket A \rrbracket \cup \llbracket \neg A \rrbracket = \llbracket A \rrbracket \cup \opname{int}\left(\llbracket A \rrbracket^\complement\right) = (0, \infty) \cup (-\infty, 0) \neq \RR \]
 
 \paragraph{Semantyka kraty dystrybutywnej}
@@ -215,7 +235,7 @@ Można udowodnić, że każda niepusta i skończona krata jest ograniczona, czyl
     \llbracket A \land B \rrbracket &= \llbracket A \rrbracket \land \llbracket B \rrbracket, \\
     \llbracket A \lor B \rrbracket &= \llbracket A \rrbracket \lor \llbracket B \rrbracket, \\
     \llbracket A \to B \rrbracket &= \sup\{c : c \land \llbracket A \rrbracket \leq \llbracket B \rrbracket\}, \\
-    A &\coloneqq \text{dowolny element kraty}
+    \llbracket A \rrbracket &= \text{dowolny element kraty}
 \end{align*}
 Wtedy
 \[ \llbracket \neg A \rrbracket = \llbracket A \to \bot \rrbracket = \sup\{c : c \land \llbracket A \rrbracket \leq \llbracket \bot \rrbracket\} = \sup\{c : c \land \llbracket A \rrbracket = \llbracket \bot \rrbracket\} \]
@@ -223,22 +243,26 @@ Wtedy
 Biorąc przykładową kratę
 \begin{figure}[H]
     \centering
-    \begin{tikzpicture}[scale=1, every node/.style={circle, fill=black, inner sep=2pt}]
-    \coordinate (A) at (0,0);
-    \coordinate (B) at (1,1);
-    \coordinate (C) at (2,0);
-    \coordinate (D) at (1,-1);
-    \coordinate (E) at (3,-1);
-    \coordinate (F) at (2,-2);
+    \begin{tikzpicture}[scale=2]
+        \tikzset{dot/.style={circle, fill, inner sep=1.5pt}}
+        \tikzset{every label/.append style={font=\scriptsize}}
 
-    \draw (A)--(B)--(C)--(D)--(A);
-    \draw (C)--(E)--(F)--(D);
+        \node[dot,label=left:$a$]         (B) at (-0.5,0.5) {};
+        \node[dot,label=above:$\llbracket \top \rrbracket$] (D) at (0,1) {};
+        \node[dot,label=above right:$b$]  (C) at (0.5,0.5) {};
+        \node[dot,label=below left:$c$]   (A) at (0,0) {};
+        \node[dot,label=right:$d$]        (E) at (1,0) {};
+        \node[dot,label=below:$\llbracket \bot \rrbracket$] (F) at (0.5,-0.5) {};
 
-    \foreach \p in {A,B,C,D,E,F}
-        \fill (\p) circle (2pt);
-\end{tikzpicture}
+        \draw (B) -- (D) -- (C) -- (A) -- (B);
+        \draw (A) -- (C) -- (E) -- (F) -- (A);
+    \end{tikzpicture}
 \end{figure}
-możemy udowodnić, że prawo wyłączonego środka nie jest dowodliwe w IRZ. Dowód zostawiamy jako ćwiczenie dla Czytelnika.
+możemy udowodnić, że prawo wyłączonego środka nie jest dowodliwe w IRZ. Jeśli weźmiemy $\llbracket A \rrbracket = c$, to $\llbracket \neg A \rrbracket = d$, więc $\llbracket A \lor \neg A \rrbracket = c \lor d = b \neq \llbracket \top \rrbracket$.
+
+\begin{problem}
+    Pokazać, że silne prawo podwójnej negacji nie jest dowodliwe w IRZ na podstawie dwóch powyższych semantyk.
+\end{problem}
 
 \subsection{Rachunek lambda}
 
