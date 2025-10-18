@@ -43,7 +43,9 @@ Dowód ten jest oczywiście słuszny na gruncie logiki klasycznej, ale nie jest 
     \item nie istnieje konstrukcja dla fałszu.
 \end{itemize}
 
-Formalnie, logika intuicjonistyczna to pewien system logiczny. Nie różni się od logiki klasycznej składnią, ale regułami wnioskowania. Fałsz oznaczamy przez $\bot$, prawdę przez $\top$, a pisząc $\Gamma \vdash A$ mamy na myśli, że formuła $A$ jest dowodliwa z założeń $\Gamma$.
+Formalnie, logika intuicjonistyczna to pewien system logiczny. Nie różni się od logiki klasycznej składnią, ale regułami wnioskowania.
+Fałsz oznaczamy przez $\bot$, a \vocab{osąd} zapisany w postaci $\Gamma \vdash A$ oznacza, że formuła $A$ wynika ze zbioru formuł (założeń) $\Gamma$.
+Zamiast $\Gamma \cup \{B\}$ będziemy często pisać $\Gamma, B$.
 
 \begin{figure}[H]
     \[
@@ -117,6 +119,7 @@ Oprócz tego, definiujemy negację jako $\neg A \coloneqq A \to \bot$. Dzięki t
     \infer2[($\neg\!$ E)]{\Gamma\vdash \bot}
 \end{prooftree}
 \]
+Oznaczamy również prawdę przez $\top \coloneqq \neg\bot = \bot \to \bot$.
 
 \begin{example}
     Pokaż, że w IRZ zachodzi \vocab{słabe prawo podwójnej negacji}, czyli $A \to \neg\neg A$.
@@ -125,8 +128,8 @@ Oprócz tego, definiujemy negację jako $\neg A \coloneqq A \to \bot$. Dzięki t
     Z definicji negacji mamy $\neg\neg A = (A \to \bot) \to \bot$, więc musimy pokazać $A \to ((A\to\bot) \to \bot)$.
     \[
     \begin{prooftree}
-        \hypo{A, A\to\bot \vdash A\to\bot}
-        \hypo{A, A\to\bot \vdash A}
+        \infer0[(Ax)]{A, A\to\bot \vdash A\to\bot}
+        \infer0[(Ax)]{A, A\to\bot \vdash A}
         \infer2[($\to\!$ E)]{A, A\to\bot \vdash \bot}
         \infer1[($\to\!$ I)]{A \vdash (A\to\bot) \to \bot}
         \infer1[($\to\!$ I)]{\vdash A \to ((A\to\bot) \to \bot)}
@@ -140,16 +143,18 @@ Oprócz tego, definiujemy negację jako $\neg A \coloneqq A \to \bot$. Dzięki t
 \begin{solution}
     Z definicji negacji mamy $\neg B = B \to \bot$ oraz $\neg A = A \to \bot$, więc musimy pokazać $(A \to B) \to ((B\to\bot) \to (A\to\bot))$.
     \[
+    \resizebox{\hsize}{!}{
     \begin{prooftree}
-        \hypo{A\to B, B \to \bot, A \vdash B \to \bot}
-        \hypo{A\to B, B \to \bot, A \vdash A \to B}
-        \hypo{A\to B, B \to \bot, A \vdash A}
+        \infer0[(Ax)]{A\to B, B \to \bot, A \vdash B \to \bot}
+        \infer0[(Ax)]{A\to B, B \to \bot, A \vdash A \to B}
+        \infer0[(Ax)]{A\to B, B \to \bot, A \vdash A}
         \infer2[($\to\!$ E)]{A \to B, B \to \bot, A \vdash B}
         \infer2[($\to\!$ E)]{A \to B, B \to \bot, A \vdash \bot}
         \infer1[($\to\!$ I)]{A \to B, B \to \bot \vdash A\to\bot}
         \infer1[($\to\!$ I)]{A \to B \vdash (B \to \bot) \to (A \to \bot)}
         \infer1[($\to\!$ I)]{\vdash (A \to B) \to ((B \to \bot) \to (A \to \bot))}
     \end{prooftree}
+    }
     \]
 \end{solution}
 
@@ -161,14 +166,14 @@ W przypadku prawa podwójnej negacji jest to oczywiste. W przypadku prawa wyłą
 \resizebox{\hsize}{!}{
 \begin{prooftree}
     \infer0[(\textcolor{AccColor1}{EM})]{(A \to \bot) \to \bot \vdash A \lor (A \to \bot)}
-    \hypo{(A \to \bot) \to \bot, A \vdash A}
-    \hypo{\Gamma \vdash (A \to \bot) \to \bot}
-    \hypo{\Gamma \vdash A \to \bot}
+    \infer0[(Ax)]{(A \to \bot) \to \bot, A \vdash A}
+    \infer0[(Ax)]{\Gamma \vdash (A \to \bot) \to \bot}
+    \infer0[(Ax)]{\Gamma \vdash A \to \bot}
     \infer2[($\to\!$ E)]{\Gamma \vdash \bot}
     \infer1[($\bot\!$ E)]{\Gamma \vdash A}
     \infer3[($\lor\!$ E)]{(A \to \bot) \to \bot \vdash A}
     \infer1[($\to\!$ I)]{\vdash (A \to \bot) \to \bot \to A}
-\end{prooftree}\
+\end{prooftree}
 }
 \]
 gdzie $\Gamma = \{(A \to \bot) \to \bot, A \to \bot\}$.
