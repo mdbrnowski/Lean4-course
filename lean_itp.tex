@@ -182,10 +182,6 @@ gdzie $\Gamma = \{(A \to \bot) \to \bot, A \to \bot\}$.
     Pokazać, że prawo wyłączonego środka nie jest dowodliwe w IRZ.
 \end{problem}
 
-\begin{problem}
-    Stwierdzić, które z czterech praw de Morgana są dowodliwe w IRZ.
-\end{problem}
-
 \begin{remark*}[ciekawostka]
     Istnieją tautologie KRZ, które nie są dowodliwe w IRZ, ale po dodaniu do IRZ jako aksjomaty nie prowadzą do logiki klasycznej, tworząc logiki \enquote{pomiędzy} intuicjonistyczną i klasyczną. Przykłady:
     \begin{itemize}
@@ -202,7 +198,7 @@ Trochę zaniedbując formalizmy, skupimy się przez chwilę na wartościowaniach
 Możemy określić \vocab{semantykę} dla logiki klasycznej, przypisując formułom prawdziwym wartość $1$, a formułom fałszywym wartość $0$ (definiując przy okazji funkcje $\land, \lor, \to$).
 Dla logiki intuicjonistycznej jest to trudniejsze, ale i ciekawsze. Pokażemy dwa z (nieskończenie) wielu możliwych sposobów.
 Oba z nich są \vocab{algebrami Heytinga}, których nie będziemy tutaj definiować.
-Warto jednak wiedzieć, że formuła logiczna jest dowodliwa w IRZ wtedy i tylko wtedy, gdy jest prawdziwa w każdej algebrze Heytinga.
+Warto jednak wiedzieć, że formuła logiczna jest tautologią IRZ wtedy i tylko wtedy, gdy jest prawdziwa w każdej algebrze Heytinga.
 
 \paragraph{Semantyka topologiczna}
 Możemy zdefiniować semantykę za pomocą topologii na $\RR$:
@@ -212,7 +208,7 @@ Możemy zdefiniować semantykę za pomocą topologii na $\RR$:
     \llbracket A \land B \rrbracket &= \llbracket A \rrbracket \cap \llbracket B \rrbracket, \\
     \llbracket A \lor B \rrbracket &= \llbracket A \rrbracket \cup \llbracket B \rrbracket, \\
     \llbracket A \to B \rrbracket &= \opname{int}\left(\llbracket A \rrbracket^\complement \cup \llbracket B \rrbracket\right), \\
-    \llbracket A \rrbracket &= \text{dowolny otwarty podzbiór $\RR$}
+    \llbracket A \rrbracket &= \text{dowolny otwarty podzbiór $\RR$.}
 \end{align*}
 Wtedy
 \[ \llbracket \neg A \rrbracket = \llbracket A \to \bot \rrbracket = \opname{int}\left(\llbracket A \rrbracket^\complement \cup \emptyset\right) = \opname{int}\left(\llbracket A \rrbracket^\complement\right) \]
@@ -221,7 +217,9 @@ Można przy pomocy takiej semantyki pokazać, że prawo wyłączonego środka ni
 \[ \llbracket A \lor \neg A \rrbracket = \llbracket A \rrbracket \cup \llbracket \neg A \rrbracket = \llbracket A \rrbracket \cup \opname{int}\left(\llbracket A \rrbracket^\complement\right) = (0, \infty) \cup (-\infty, 0) \neq \RR \]
 
 \paragraph{Semantyka kraty dystrybutywnej}
-Krata to zbiór częściowo uporządkowany, w którym istnieją kresy dolne i górne dowolnych par elementów. Definiujemy działania
+Krata to zbiór częściowo uporządkowany, w którym istnieją kresy dolne i górne dowolnych par elementów.
+Będziemy je przedstawiać za pomocą \vocab{diagramów Hassego}\footnote{Czym dokładnie jest diagram Hassego można dowiedzieć się na \href{https://pl.wikipedia.org/wiki/Diagram_Hassego}{Wikipedii}.}.
+Definiujemy działania
 \begin{align*}
     a \land b &\coloneqq \inf\{a, b\}, \\
     a \lor b &\coloneqq \sup\{a, b\}.
@@ -240,7 +238,7 @@ Można udowodnić, że każda niepusta i skończona krata jest ograniczona, czyl
     \llbracket A \land B \rrbracket &= \llbracket A \rrbracket \land \llbracket B \rrbracket, \\
     \llbracket A \lor B \rrbracket &= \llbracket A \rrbracket \lor \llbracket B \rrbracket, \\
     \llbracket A \to B \rrbracket &= \sup\{c : c \land \llbracket A \rrbracket \leq \llbracket B \rrbracket\}, \\
-    \llbracket A \rrbracket &= \text{dowolny element kraty}
+    \llbracket A \rrbracket &= \text{dowolny element kraty.}
 \end{align*}
 Wtedy
 \[ \llbracket \neg A \rrbracket = \llbracket A \to \bot \rrbracket = \sup\{c : c \land \llbracket A \rrbracket \leq \llbracket \bot \rrbracket\} = \sup\{c : c \land \llbracket A \rrbracket = \llbracket \bot \rrbracket\} \]
@@ -267,6 +265,10 @@ możemy udowodnić, że prawo wyłączonego środka nie jest dowodliwe w IRZ. Je
 
 \begin{problem}
     Pokazać, że silne prawo podwójnej negacji nie jest dowodliwe w IRZ na podstawie dwóch powyższych semantyk.
+\end{problem}
+
+\begin{problem}
+    Stwierdzić, które z czterech praw de Morgana są dowodliwe w IRZ.
 \end{problem}
 
 \subsection{Rachunek lambda}
