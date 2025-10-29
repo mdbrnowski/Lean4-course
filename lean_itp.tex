@@ -13,7 +13,6 @@
 \newcommand{\FV}{\opname{FV}}
 \newcommand{\Lean}[1]{\mintinline[fontsize=\normalsize]{lean4}{#1}}
 \newcommand{\centerLean}[2][]{\begin{center}\Lean{#2}#1\end{center}}
-\tikzset{>=to}
 
 \begin{document}
 \maketitle
@@ -335,6 +334,7 @@ Jeśli w termie występuje więcej niż jeden $\beta$-redeks, to $\beta$-redukcj
 \begin{example}
     \label{eq:beta-reduction}
     Pokazane poniżej są niektóre ścieżki redukcyjne dla podanego termu.
+    \tikzset{>={Computer Modern Rightarrow[scale=1.3]}}
     \begin{center}
         \begin{tikzpicture}
             \node (start) at (0, 0) {$\left(\lambda x\ldotp xx\right)\left(\left(\lambda y\ldotp y\right) z\right)$};
@@ -359,7 +359,8 @@ Jest to jedno z ważniejszych twierdzeń rachunku lambda, mówiące o tym, że r
 
 \begin{figure}[H]
     \centering
-    \begin{tikzpicture}
+    \tikzset{>={Computer Modern Rightarrow[scale=1.3]}}
+    \begin{tikzpicture}[scale=0.8]
         \node (M) at (0, 0) {$M$};
         \node (P) at (-2, -2) {$P$};
         \node (Q) at (2, -2) {$Q$};
