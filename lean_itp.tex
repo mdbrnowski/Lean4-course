@@ -280,7 +280,7 @@ Rachunek lambda to język złożony z termów, z których każdy to:
 \end{itemize}
 
 Formalnie termy można więc zdefiniować następująco:
-\[ M \Coloneqq x \mid \lambda x\ldotp M \mid (MM), \]
+\[ M \Coloneqq x \mid (\lambda x\ldotp M) \mid (MM), \]
 gdzie $x$ reprezentuje dowolną zmienną.
 
 Aby uprościć zapis, będziemy pisać $MNP$ zamiast $(MN)P$ -- to znaczy stwierdzamy, że aplikacja jest łączna lewostronnie. Ponadto, wiele $\lambda$-abstrakcji zapisujemy jako $\lambda x_1 \ldots x_n\ldotp M$, co jest równoważne termowi $\lambda x_1\ldotp (\lambda x_2\ldotp (\ldots (\lambda x_n\ldotp M) \ldots))$. Kropka w tym zapisie jest bardzo istotna, np.
@@ -306,7 +306,7 @@ Term nazywamy \vocab{termem zamkniętym} lub \vocab{kombinatorem}, jeśli $\FV(M
     \end{align*}
 \end{remark}
 
-\subsubsection*{Alfa-konwersja}
+\subsubsection{Alfa-konwersja}
 
 \vocab{$\alpha$-konwersja} to przekształcenie termu, które polega na zmianie nazwy zmiennej (unikając kolizji oznaczeń zmiennych). Wprowadzamy relację równoważności $\equiv_\alpha$ w zbiorze termów $\Lambda$ w ten sposób, że dane dwa termy $M$ i $N$ są równoważne, jeśli można otrzymać jeden z drugiego poprzez (wielokrotne) $\alpha$-konwersje. Na przykład:
 \[ a (\lambda b\ldotp bc) \equiv_\alpha a (\lambda d\ldotp dc), \]
@@ -323,17 +323,26 @@ Od tej pory utożsamiamy ze sobą termy różniące się jedynie nazwami zmienny
 Będziemy stosować dosyć uniwersalny zapis $M[x \coloneqq N]$ na term, który powstał z termu $M$ poprzez zastąpienie wszystkich \emph{wolnych} wystąpień zmiennej $x$ termem $N$.
 Zakładamy przy tym, że żadna zmienna wolna w $N$ nie zacznie być związana w $M[x \coloneqq N]$ (ponownie unikamy kolizji oznaczeń).
 
-\subsubsection*{Beta-redukcja}
+\subsubsection{Beta-redukcja}
 
 \vocab{$\beta$-redukcja} to taka relacja $\to_\beta$ w zbiorze termów $\Lambda$, że $M \to_\beta N$, gdy \vocab{$\beta$-redeks} postaci $(\lambda x\ldotp P)Q$ w termie $M$ zostaje zastąpiony przez $P[x \coloneqq Q]$ w termie $N$.
-Relacja $\toto_\beta$ to domknięcie przechodnio-zwrotne relacji $\to_\beta$ (czyli najmniejsza relacja przechodnia i zwrotna, która zawiera relację $\to_\beta$), a $=_\beta$ to jej domknięcie równoważnościowe.
-Piszemy $M \downarrow_\beta N$, jeśli istnieje term $P$ taki, że $M \toto_\beta P$ i $N \toto_\beta P$.
+Bardziej formalnie, jest to najmniejsza relacja w zbiorze $\Lambda$ spełniająca następujące warunki:
+\begin{enumerate}
+    \item $(\lambda x\ldotp P)Q \to_\beta P[x \coloneqq Q]$,
+    \item jeśli $M \to_\beta M'$, to
+    \begin{itemize}[nosep]
+        \item $MN \to_\beta M'N$,
+        \item $NM \to_\beta NM'$,
+        \item $\lambda x\ldotp M \to_\beta \lambda x\ldotp M'$.
+    \end{itemize}
+\end{enumerate}
 
 Jeśli w termie występuje więcej niż jeden $\beta$-redeks, to $\beta$-redukcja nie jest deterministyczna -- możemy wybrać dowolny z nich i wykonać redukcję.
+Przez $\toto_\beta$ oznaczamy domknięcie przechodnio-zwrotne relacji $\to_\beta$ (czyli najmniejsza relacja przechodnia i zwrotna, która zawiera relację $\to_\beta$), a przez $=_\beta$ jej domknięcie równoważnościowe.
 
 \begin{example}
     \label{eq:beta-reduction}
-    Pokazane poniżej są niektóre ścieżki redukcyjne dla podanego termu.
+    Pokazane poniżej są różne ścieżki redukcyjne dla podanego termu.
     \tikzset{>={Computer Modern Rightarrow[scale=1.3]}}
     \begin{center}
         \begin{tikzpicture}
@@ -352,7 +361,7 @@ Jeśli w termie występuje więcej niż jeden $\beta$-redeks, to $\beta$-redukcj
 \end{example}
 
 \begin{theorem}[Churcha-Rossera]
-    Jeśli $M \toto_\beta P$ oraz $M \toto_\beta Q$, to $P \downarrow_\beta Q$.
+    Jeśli $M \toto_\beta P$ oraz $M \toto_\beta Q$, to istnieje takie $M'$, że $P \toto_\beta M'$ i $Q \toto_\beta M'$.
 \end{theorem}
 
 Jest to jedno z ważniejszych twierdzeń rachunku lambda, mówiące o tym, że relacja $\toto_\beta$ ma \vocab{własność rombu} (ang. \textit{diamond property}), której notabene nie ma relacja $\to_\beta$ (czego dowodzi przykład \ref{eq:beta-reduction}). Jeśli dopełnienie przechodnio-zwrotne relacji ma własność rombu, to mówimy, że relacja ta jest \vocab{konfluentna}. Powyższe twierdzenie mówi więc, że relacja $\to_\beta$ jest konfluentna.
@@ -377,26 +386,18 @@ Jest to jedno z ważniejszych twierdzeń rachunku lambda, mówiące o tym, że r
 Prostym wnioskiem z tego twierdzenia jest fakt, że każdy term ma co najwyżej jedną postać normalną, to znaczy pozbawioną $\beta$-redeksów.
 Dlaczego \emph{co najwyżej}, a nie \emph{dokładnie}? Na przykład term
 \[ \symbf{\Omega} \coloneqq \left(\lambda x\ldotp xx\right)\left(\lambda x\ldotp xx\right) \]
-posiada tylko jeden $\beta$-redeks, którego redukcja prowadzi do termu $\symbf{\Omega}$ (co Czytelnik raczy sprawdzić), czyli $\symbf{\Omega} \to_\beta \symbf{\Omega}$. Term $\symbf{\Omega}$ nie ma więc postaci normalnej.
+posiada tylko jeden $\beta$-redeks, a jego redukcja prowadzi do termu $\symbf{\Omega}$ (co Czytelnik raczy sprawdzić), czyli $\symbf{\Omega} \to_\beta \symbf{\Omega}$. Term $\symbf{\Omega}$ nie ma więc postaci normalnej.
 
-\begin{remark}[Rachunek lambda jako teoria równościowa]
-    Rachunek lambda z $\beta$-redukcją można potraktować jako teorię równościową (zwaną teorią $\lambda\beta$), czyli zbiór formuł zamknięty ze względu na reguły wnioskowania. Czytelnik zainteresowany logiką formalną może zastanowić się, jakie reguły wnioskowania są potrzebne oraz co daje nam opisana niżej $\eta$-redukcja (teoria $\lambda\beta\eta$).
-\end{remark}
-
-\subsubsection*{Eta-redukcja}
-
-\vocab{$\eta$-redukcja} to taka relacja $\to_\eta$ w zbiorze termów $\Lambda$, że $M \to_\eta N$, gdy \vocab{$\eta$-redeks} postaci $\lambda x\ldotp Px$ w termie M zostaje zastąpiony przez $P$ w termie $N$, zakładając $x \notin \FV(P)$.
-
-Tak jak poprzednio, dokmnięcie przechodnio-zwrotne relacji $\to_\eta$ oznaczamy przez $\toto_\eta$. Ponadto, sumę relacji $\to_\beta$ i $\to_\eta$ oznaczamy przez $\to_{\beta\eta}$, a jej domknięcie przechodnio-zwrotne przez $\toto_{\beta\eta}$.
-
-\todo[inline]{Konfuentność $\to_\eta$?}
-
-W tym miejscu kończymy krótkie wprowadzenie do rachunku lambda, chociaż nie można powiedzieć, że temat został wyczerpany chociaż w najmniejszym stopniu. Zaintrygowany Czytelnik może przeczytać więcej o kombinatorach punktu stałego, drzewach Böhma czy wreszcie reprezentowaniu obliczeń maszyny Turinga za pomocą rachunku lambda.
-
-\subsubsection*{Kilka ćwiczeń}
-
-W poniższych ćwiczeniach warto wykorzystać poznany wcześniej kombinator $\symbf{\Omega}$ lub kombinator $\symbf{Y} \coloneqq \lambda f\ldotp (\lambda x\ldotp f (xx)) (\lambda x\ldotp f (xx))$ o tej ciekawej własności, że dla każdego termu $F \in \Lambda$ zachodzi
-\[ F(\symbf{Y}(F)) =_\beta \symbf{Y}(F). \]
+\subsubsection{Kombinator punktu stałego}
+Kombinator $\symbf{Y} \coloneqq \lambda f\ldotp (\lambda x\ldotp f (xx)) (\lambda x\ldotp f (xx))$ nazywamy \vocab{kombinatorem punktu stałego}. Ma on tę ciekawą własność, że dla każdego termu $F \in \Lambda$, zachodzi
+\[ F(\symbf{Y}(F)) =_\beta \symbf{Y}(F), \]
+ponieważ
+\[ F(\symbf{Y}(F)) \to_\beta F\left((\lambda x\ldotp F (xx)) (\lambda x\ldotp F (xx))\right) \]
+oraz
+\begin{align*}
+    \symbf{Y}(F) &\to_\beta (\lambda x\ldotp F (xx)) (\lambda x\ldotp F (xx)) \\
+    &\to_\beta F\left((\lambda x\ldotp F (xx)) (\lambda x\ldotp F (xx))\right).
+\end{align*}
 
 \begin{problem}
     Znajdź term $P$ taki, że $Px =_\beta P$.
@@ -405,6 +406,72 @@ W poniższych ćwiczeniach warto wykorzystać poznany wcześniej kombinator $\sy
 \begin{problem}
     Znajdź term $P$ taki, że $Px =_\beta xP$.
 \end{problem}
+
+\subsubsection{Eta-redukcja}
+
+\vocab{$\eta$-redukcja} to taka relacja $\to_\eta$ w zbiorze termów $\Lambda$, że $M \to_\eta N$, gdy \vocab{$\eta$-redeks} postaci $\lambda x\ldotp Px$ w termie M zostaje zastąpiony przez $P$ w termie $N$, zakładając $x \notin \FV(P)$.
+Bardziej formalnie, jest to najmniejsza relacja w zbiorze $\Lambda$ spełniająca następujące warunki:
+\begin{enumerate}
+    \item jeśli $x \notin \FV(P)$, to $\lambda x\ldotp Px \to_\eta P$,
+    \item jeśli $M \to_\eta M'$, to
+    \begin{itemize}[nosep]
+        \item $MN \to_\eta M'N$,
+        \item $NM \to_\eta NM'$,
+        \item $\lambda x\ldotp M \to_\eta \lambda x\ldotp M'$.
+    \end{itemize}
+\end{enumerate}
+
+Tak jak poprzednio, domknięcie przechodnio-zwrotne relacji $\to_\eta$ oznaczamy przez $\toto_\eta$. Ponadto, sumę relacji $\to_\beta$ i $\to_\eta$ oznaczamy przez $\to_{\beta\eta}$, a jej domknięcie przechodnio-zwrotne przez $\toto_{\beta\eta}$.
+
+\begin{theorem}[Churcha-Rossera dla $\eta$-redukcji i $\beta\eta$-redukcji]
+    Relacje $\to_\eta$ oraz $\to_{\beta\eta}$ są konfluentne.
+\end{theorem}
+
+\subsubsection{Wyrażalność algorytmów w rachunku lambda}
+
+Liczby naturalne możemy reprezentować w rachunku lambda za pomocą tzw. \vocab{liczebników Churcha}:
+\[ \symbf{n} = \lambda fx\ldotp f^n(x), \]
+na przykład
+\begin{align*}
+    \symbf{0} &= \lambda fx\ldotp x, \\
+    \symbf{1} &= \lambda fx\ldotp f(x), \\
+    \symbf{2} &= \lambda fx\ldotp f(f(x)).
+\end{align*}
+Wtedy operacja następnika jest reprezentowana przez term
+\[ \symbf{succ} = \lambda nfx\ldotp f(nfx), \]
+a dodawanie przez term
+\[ \symbf{add} = \lambda mnfx\ldotp mf(nfx). \]
+
+Instrukcje warunkowe można zaimplementować za pomocą termów
+\[ \symbf{true} = \lambda xy\ldotp x, \]
+\[ \symbf{false} = \lambda xy\ldotp y, \]
+wtedy instrukcja warunkowa \texttt{if B then M else N} jest reprezentowana przez term
+\[ \symbf{if} = \lambda B M N\ldotp B M N. \]
+Istotnie,
+\begin{align*}
+    \symbf{if}\ \symbf{true}\ M\ N &\to_\beta (\lambda xy\ldotp x) M N \to_\beta M, \\
+    \symbf{if}\ \symbf{false}\ M\ N &\to_\beta (\lambda xy\ldotp y) M N \to_\beta N.
+\end{align*}
+
+Porównanie liczby $n$ do zera można zaimplementować za pomocą termu
+\[ \symbf{is\_zero} = \lambda n\ldotp n (\lambda x\ldotp \symbf{false})\ \symbf{true}. \]
+
+\begin{problem}
+    Zdefiniuj w rachunku lambda negację, koniunkcję, alternatywę oraz implikację.
+\end{problem}
+
+\begin{problem}
+    Zdefiniuj w rachunku lambda funkcje mnożenia oraz potęgowania liczb naturalnych.
+\end{problem}
+
+\begin{problem}
+    Zdefiniuj w rachunku lambda funkcję obliczającą $n!$.
+\end{problem}
+
+\begin{theorem}[Kleene'a]
+    Każda funkcja częściowo rekurencyjna jest reprezentowalna w rachunku lambda.
+\end{theorem}
+Twierdzenie odwrotne również jest prawdziwe. Funkcje częściowo rekurencyjne to dokładnie te funkcje, które są obliczalne przez maszyny Turinga. Z powyższego twierdzenia wynika więc, że rachunek lambda jest modelem obliczalności równoważnym maszynom Turinga.
 
 \subsection{Teoria typów}
 
