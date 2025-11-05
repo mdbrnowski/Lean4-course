@@ -435,13 +435,13 @@ na przykład
 \begin{align*}
     \symbf{0} &= \lambda fx\ldotp x, \\
     \symbf{1} &= \lambda fx\ldotp f(x), \\
-    \symbf{2} &= \lambda fx\ldotp f(f(x)).
+    \symbf{2} &= \lambda fx\ldotp f(f(x)), \\
+    \symbf{3} &= \lambda fx\ldotp f(f(f(x))).
 \end{align*}
 Wtedy operacja następnika jest reprezentowana przez term
 \[ \symbf{succ} = \lambda nfx\ldotp f(nfx), \]
 a dodawanie przez term
 \[ \symbf{add} = \lambda mnfx\ldotp mf(nfx). \]
-
 Instrukcje warunkowe można zaimplementować za pomocą termów
 \[ \symbf{true} = \lambda xy\ldotp x, \]
 \[ \symbf{false} = \lambda xy\ldotp y, \]
@@ -452,9 +452,8 @@ Istotnie,
     \symbf{if}\ \symbf{true}\ M\ N &\to_\beta (\lambda xy\ldotp x) M N \to_\beta M, \\
     \symbf{if}\ \symbf{false}\ M\ N &\to_\beta (\lambda xy\ldotp y) M N \to_\beta N.
 \end{align*}
-
 Porównanie liczby $n$ do zera można zaimplementować za pomocą termu
-\[ \symbf{is\_zero} = \lambda n\ldotp n (\lambda x\ldotp \symbf{false})\ \symbf{true}. \]
+\[ \symbf{iszero} = \lambda n\ldotp n (\lambda x\ldotp \symbf{false})\ \symbf{true}. \]
 
 \begin{problem}
     Zdefiniuj w rachunku lambda negację, koniunkcję, alternatywę oraz implikację.
@@ -462,6 +461,10 @@ Porównanie liczby $n$ do zera można zaimplementować za pomocą termu
 
 \begin{problem}
     Zdefiniuj w rachunku lambda funkcje mnożenia oraz potęgowania liczb naturalnych.
+\end{problem}
+
+\begin{problem}
+    Zdefiniuj w rachunku lambda funkcję poprzednika liczby naturalnej. Poprzednik zera powinien zwracać zero.
 \end{problem}
 
 \begin{problem}
