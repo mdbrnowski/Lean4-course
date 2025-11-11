@@ -1,5 +1,5 @@
 % arara: latexmk: { engine: lualatex, options: [-synctex=1, -aux-directory=./build] }
-\documentclass[polish,pretty]{angav}
+\documentclass[polish,pretty,bibliography=totocnumbered]{angav}
 
 \title{Lean \& ITP}
 \author{Michał Dobranowski}
@@ -476,28 +476,74 @@ Porównanie liczby $n$ do zera można zaimplementować za pomocą termu
 \end{theorem}
 Twierdzenie odwrotne również jest prawdziwe. Funkcje częściowo rekurencyjne to dokładnie te funkcje, które są obliczalne przez maszyny Turinga. Z powyższego twierdzenia wynika więc, że rachunek lambda jest modelem obliczalności równoważnym maszynom Turinga.
 
-\subsection{Teoria typów}
+\subsection{Typowany rachunek lambda}
 
-Zajmiemy się teraz sposobem typowania rachunku lambda wprowadzonym przez Alonzo Churcha (istnieje również alternatywna, równie popularna, wersja wprowadzona przez Haskella Curry'ego).
+Do rachunku lambda będziemy chcieli dodać typy w następujący sposob. Każdy term rachunku lambda będzie miał przypisany pewien typ, co będziemy zapisywać jako $M : \tau$, gdzie $M$ jest termem, a $\tau$ jest typem. Niech $\symbb{A}$ będzie zbiorem \vocab{typów atomowych}. Zbiór wszystkich typów $\symbb{T}$ definiujemy rekurencyjnie:
+\begin{align*}
+    \alpha &\in \symbb{A} \implies \alpha \in \symbb{T}, \\
+    \sigma, \tau &\in \symbb{T} \implies (\sigma \to \tau) \in \symbb{T},
+\end{align*}
+gdzie druga reguła jest \vocab{konstruktorem typów funkcyjnych}. Zakładamy przy tym, że nie istnieją typy $\alpha, \beta, \gamma \in \symbb{A}$ takie, że $\alpha \to \beta = \gamma$. Zamiast pisać $\sigma \to (\tau \to \rho)$, będziemy pisać $\sigma \to \tau \to \rho$ (operator $\to$ jest łączny prawostronnie).
 
+\begin{figure}[H]
+    \[
+    \begin{prooftree}
+        \infer0[(Ax)]{\Gamma,x:A\vdash x:A}
+    \end{prooftree}
+    \]
+    \[
+    \begin{prooftree}
+        \hypo{\Gamma,x:A\vdash M:B}
+        \infer1[($\lambda$ abs)]{\Gamma\vdash \lambda x\ldotp M:(A\to B)}
+    \end{prooftree}
+    \qquad
+    \begin{prooftree}
+        \hypo{\Gamma\vdash M:(A \to B)}
+        \hypo{\Gamma\vdash N:A}
+        \infer2[($\lambda$ app)]{\Gamma\vdash MN:B}
+    \end{prooftree}
+    \]
+    \caption{Reguły przypisania typów.}
+\end{figure}
 
+\begin{example}
+    Niech $\symbb{A} = \{\alpha\}$. Wtedy term $\symbf{true} = \lambda x\ldotp \lambda y\ldotp x$ ma typ $\alpha \to \alpha \to \alpha$, ponieważ
+    \[
+    \begin{prooftree}
+        \infer0[(Ax)]{x:\alpha,y:\alpha\vdash x:\alpha}
+        \infer1[($\lambda$ abs)]{x:\alpha\vdash \lambda y\ldotp x:\alpha \to \alpha}
+        \infer1[($\lambda$ abs)]{\vdash \lambda x\ldotp \lambda y\ldotp x:\alpha \to \alpha \to \alpha}
+    \end{prooftree}
+    \]
+    Oznaczając $\alpha \to \alpha \to \alpha$ przez $\symbb{B}$ (typ boolowski), możemy pokazać, że term $\symbf{neg}\ \symbf{true}$ również ma typ $\symbb{B}$.
+\end{example}
 
-Teoria zbiorów służy za podstawę matematyki, ponieważ oferuje informacje semantyczne, np.
-\[ 7 \in \left\{n \in \NN \mid \forall a \in \NN, a^n \equiv a \pmod{n} \right\}. \]
-Ze skonstruowanych w ten sposób zbiorów łatwo odczytać interesujące nas własności, trudniej jednak dowieść ich prawdziwości.
-Z drugiej strony teoria typów oferuje (uboższe na pierwszy rzut oka) informacje syntaktyczne, np.
-\[ 1 + (2 \cdot 3) : \NN, \]
-za to nie potrzebuje \emph{dowodu}, a jedynie \emph{obliczenia} zgodnie z danymi regułami.
+\subsubsection{Izomorfizm Curry'ego-Howarda}
 
-\subsubsection*{Izomorfizm Curry'ego-Howarda}
+Pokazany powyżej system typów możemy rozszerzyć o konstruktory typów $\land$ i $\lor$ oraz dodać do $\symbb{A}$ specjalny typ $\bot$, który nie będzie przypisany żadnemu termowi.
+Reguły przypisania typów należałoby wtedy rozszerzyć o odpowiednie zasady konstrukcji i destrukcji dla tych nowych typów.
 
-Izomorfizm Curry'ego-Howarda to twierdzenie, które łączy logikę i teorię typów.
+Izomorfizm Curry'ego-Howarda to twierdzenie, które łączy logikę i tak zbudowaną teorię typów.
 Mówi ono, że jeśli formułom logicznym przypiszemy odpowiednie typy, a dowodom tych formuł przypiszemy odpowiednie termy, to otrzymamy izomorfizm postaci:
 \[ \text{formuła ma dowód} \iff \text{typ ma term}. \]
 W ten sposób możemy przepisać formułę logiczną do postaci typu i udowodnić ją, konstruując term tego typu.
 W tym właśnie procesie przydaje się oprogramowanie takie jak Lean.
 
-\todo[inline]{Dokończyć opis izomorfizmu Curry'ego-Howarda oraz całą sekcję o teorii typów.}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ll}
+        \hline
+        logika intuicjonistyczna & typowany rachunek lambda \\
+        \hline
+        formuła $A$ & typ $A \in \symbb{T}$ \\
+        dowód formuły $A$ & term typu $A$ \\
+        implikacja & typ funkcyjny ($\to$) \\
+        formuła niedowodliwa & typ nieposiadający termu \\
+        tautologia & typ kombinatora \\
+        \hline
+    \end{tabular}
+    \caption{Odpowiadające sobie pojęcia w logice i w typowanym rachunku lambda.}
+\end{table}
 
 \section{Podstawy dowodzenia w Lean}
 
@@ -508,7 +554,7 @@ Aby rozpocząć pracę, należy stworzyć projekt za pomocą
 \begin{minted}{bash}
 lake new project-name math-lax
 \end{minted}
-który od razu dodaje Mathlib do wymaganych zależności.
+który od razu dodaje Mathlib (de facto bibliotekę standardową, zawierającą wiele twierdzeń z różnych działów matematyki) do wymaganych zależności.
 
 \todo[inline]{wyjaśnić theorem, example, nawiasy klamrowe i okrągłe}
 
@@ -646,5 +692,8 @@ example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
   cases h <;> trivial
 \end{minted}
 
+\begin{thebibliography}{9}
+    \bibitem{SorensenUrzyczyn} M. H. Sørensen, P. Urzyczyn, Lectures on the Curry-Howard Isomorphism, \textit{Studies in Logic and the Foundations of Mathematics}, vol. 149, Elsevier, 2006.
+\end{thebibliography}
 
 \end{document}
