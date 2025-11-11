@@ -6,8 +6,8 @@ Kurs Leana oraz ITP (*interactive theorem proving*).
 def info := λ (d : Wednesday) ↦ meet(D17.3_27c, d, "18:30")
 ```
 
-[Aktualny skrypt](https://mdbrnowski.github.io/Lean4-course/lean_itp.pdf)
+**[Aktualny skrypt](https://mdbrnowski.github.io/Lean4-course/lean_itp.pdf)**
 
 Zestawy zadań:
 
-* ...
+* [Zestaw 1](problemsets/problemset01.lean) (logika)
