@@ -556,11 +556,136 @@ lake new project-name math-lax
 \end{minted}
 który od razu dodaje Mathlib (de facto bibliotekę standardową, zawierającą wiele twierdzeń z różnych działów matematyki) do wymaganych zależności.
 
-\todo[inline]{wyjaśnić theorem, example, nawiasy klamrowe i okrągłe}
+\subsection{Składnia -- bardzo krótki wstęp}
+
+Póki co nie będziemy się zagłębiać w składnię, a jedynie wymienimy kilka podstawowych elementów, które posłużą nam do w miarę swobodnego poruszania się w Leanie (a przynajmniej jego części dotyczącej dowodzenia twierdzeń matematycznych).
+
+\subparagraph{Funkcje i stałe} Funkcje (oraz stałe, które są funkcjami stałej wartości) definiujemy za pomocą słowa kluczowego \Lean{def}, na przykład:
+\begin{minted}{lean4}
+def add (a b : Nat) : Nat := a + b
+\end{minted}
+definiuje funkcję \Lean{add}, która przyjmuje dwie liczby naturalne (typ \Lean{Nat}) i zwraca ich sumę.
+
+\subparagraph{Twierdzenia i przykłady} Twierdzenia definiujemy za pomocą słowa kluczowego \Lean{theorem} lub \Lean{lemma}, na przykład:
+\begin{minted}{lean4}
+theorem add_zero (a : Nat) : add a 0 = a := -- dowód
+\end{minted}
+Jeśli mamy pewne stwierdzenie (z dowodem), którego nie będziemy używać, więc nie potrzebuje nazwy, możemy użyć słowa kluczowego \Lean{example}:
+\begin{minted}{lean4}
+example (a : Nat) : add 0 a = a := -- dowód
+\end{minted}
+Samo sformuowanie twierdzeń, lematów i przykładów jest często pewną trudnością. Możemy być więc w sytuacji, gdy chcemy najpierw sformuować tezę, a jej dowód zostawić na później. W takim przypadku nieodzowne będzie słowo kluczowe \Lean{sorry}, dzięki któremu program się skompiluje (z ostrzeżeniem), mimo braku dowodu.
+\begin{minted}{lean4}
+theorem pow_comm (a b : Nat) : a ^ b = b ^ a :=
+  sorry
+\end{minted}
+Oczywiście, taka teza może być fałszywa (jak powyżej).
+
+\begin{remark}[Plausible]
+    Istnieje paczka Leana o nazwie \textbf{Plausible}, która pomaga w szybkim szukaniu kontrprzykładów do hipotez. Jej działania opiera sie po prostu na losowym próbkowaniu argumentów i sprawdzaniu, czy teza zachodzi. Jeśli nie, to zwraca znaleziony kontrprzykład (przez informację diagnostyczną błędu kompilacji).
+    \begin{minted}{lean4}
+import Plausible
+
+theorem pow_comm (a b : Nat) : a ^ b = b ^ a := by
+  plausible
+    \end{minted}
+\end{remark}
+
+\subparagraph{Aksjomaty} Czasami będziemy chcieli wprowadzić pewne aksjomaty, czyli stwierdzenia przyjmowane bez dowodu. W tym celu używamy słowa kluczowego \Lean{axiom}:
+\begin{minted}{lean4}
+axiom add_comm (a b : Nat) : a + b = b + a
+\end{minted}
+
+\subparagraph{Komentarze} Komentować kod można i należy następująco:
+\begin{minted}{lean4}
+def foo : Nat := 42 -- to jest komentarz jednowierszowy
+/- to jest
+komentarz
+wielowierszowy -/
+\end{minted}
+
+\subparagraph{Sprawdzenie typu} Sprawdzić typ termu (czyli, przez izomorfizm Curry'ego-Howarda, również wypowiedź twierdzenia), możemy następująco:
+\begin{minted}{lean4}
+#check Nat -- Nat : Type
+#check Nat.add -- Nat.add : Nat → Nat → Nat
+#check Nat.add 1 -- Nat.add 1 : Nat → Nat
+#check Nat.add 1 2 -- Nat.add 1 2 : Nat
+#check Nat.add_comm -- Nat.add_comm (n m : Nat) : n + m = m + n
+\end{minted}
+
+\begin{problem}
+    \label{prob:type-of-type}
+    Skoro \Lean{Nat} jest typu \Lean{Type}, to jaki jest typ \Lean{Type}? Jaki jest typ tego typu?
+\end{problem}
+
+\subparagraph{Ewaluacja funkcji} Czasami, zamiast dowodzić twierdzeń, będziemy chcieli po prostu obliczyć wartość pewnej funkcji. Możemy to zrobić tak:
+\begin{minted}{lean4}
+#eval Nat.add 2 3 -- 5
+\end{minted}
+
+\subparagraph{Operatory potoku i odwróconego potoku} Jak na porządny język programowania przystało, Lean posiada operatory umożliwiające kontrolę kolejności ewaluacji wyrażeń. Operatory \texttt{<|} i \texttt{|>} zachowują się tak samo jak w F\# czy Elm, sam operator \texttt{|>} znajdziemy również w Elixirze czy OCaml-u. W Haskellu odpowiadają one odpowiednio operatorom \texttt{\$} i \texttt{\&}. Przykłady użycia:
+\begin{minted}{lean4}
+#eval Nat.add 1 (Nat.mul 2 3)   -- 7
+#eval Nat.add 1 <| Nat.mul 2 3  -- 7
+#eval Nat.mul 2 3 |> Nat.add 1  -- 7
+\end{minted}
+
+\subsubsection{Tryby dowodzenia}
+
+Dowodząc twierdzenie, lemat, czy przykład, możemy wybrać jeden z dwóch trybów:
+\begin{itemize}
+    \item \vocab{tryb termowy} (ang. \textit{term mode}), w którym dowód jest pojedynczym (potencjalnie długim) termem,
+    \item \vocab{tryb taktyczny} (ang. \textit{tactic mode}), w którym dowód jest ciągiem \vocab{taktyk} modyfikujących stan dowodu.
+\end{itemize}
+Pierwszy jest zbliżony do rachunku lambda, drugi bardziej przypomina tradycyjne dowodzenie matematyczne. Często proste fakty łatwiej udowodnić w trybie termowym, a bardziej złożone w trybie taktycznym. Oto przykład dowodu (a właściwie zastosowania twierdzenia) w obu trybach:
+\begin{minted}{lean4}
+-- term mode (aplikacja 2a i 2b do twierdzenia Nat.add_comm)
+example (a b : Nat) : 2 * a + 2 * b = 2 * b + 2 * a := Nat.add_comm (2 * a) (2 * b)
+-- tactic mode (po by następuje taktyka rw)
+example (a b : Nat) : 2 * a + 2 * b = 2 * b + 2 * a := by rw [Nat.add_comm]
+\end{minted}
+
+\subsubsection{Argumenty i ich rodzaje}
+
+Czytelnik już zapewne zdążył zauważyć, że twierdzenia w Leanie zazwyczaj przyjmują argumenty. Na przykład w twierdzeniu \Lean{Nat.add_comm} mamy argumenty \Lean{(n : Nat)} i \Lean{(m : Nat)}, zapisywane jako \Lean{(n m : Nat)}. Takimi argumentami będą również założenia twierdzenia, na przykład w:
+\begin{minted}{lean4}
+theorem tw (a : Nat) (b : Nat) (c : Nat) (h₁ : a < b) (h₂ : b < c) : a < c := sorry
+\end{minted}
+Chcąc użyć takiego twierdzenia, musimy podać wszystkie argumenty, np.
+\begin{minted}{lean4}
+axiom one_lt_two : 1 < 2
+axiom two_lt_three : 2 < 3
+
+#check tw 1 2 3 one_lt_two two_lt_three
+\end{minted}
+
+Widać tutaj więc pewną redundancję -- argumenty \Lean{a}, \Lean{b} i \Lean{c} są w pełni określone przez założenia \Lean{h₁} i \Lean{h₂}. Aby tego uniknąć, Lean pozwala na definiowanie argumentów \textit{implicit}, czyli takich, które mogą być pominięte przy wywoływaniu danej funkcji lub twierdzenia. W tym celu używamy nawiasów klamrowych zamiast okrągłych:
+\begin{minted}{lean4}
+theorem tw {a : Nat} {b : Nat} {c : Nat} (h₁ : a < b) (h₂ : b < c) : a < c := sorry
+\end{minted}
+Teraz możemy użyć tego twierdzenia jako
+\begin{minted}{lean4}
+#check tw one_lt_two two_lt_three
+\end{minted}
+
+Oprócz argumentów \textit{explicit} i \textit{implicit}, Lean pozwala na definiowanie argumentów \textit{instance implicit} oraz \textit{strict implicit}, oznaczanych odpowiednio przez $[\ldots]$ oraz $⦃\ldots⦄$. Zajmiemy się nimi później.
+
+\subsection{Typy Sort, Type i Prop}
+
+W ramach problemu \ref{prob:type-of-type} Czytelnik miał okazję zastanowić się nad typami \Lean{Type}, \Lean{Type 1}, \Lean{Type 2} itd.
+Są one częścią nieskończonej hierarchii typów \Lean{Sort u}, gdzie \Lean{u} jest zmienną uniwersalną oznaczającą poziom uniwersum.
+Typ \Lean{Sort u} jest więc typu \Lean{Sort (u + 1)}.
+\Lean{Type u} jest synonimem dla \Lean{Sort (u + 1)}, a \Lean{Prop} jest synonimem dla \Lean{Sort 0}.
+
+Skąd takie przesunięcie? Typy typu \Lean{Type u} (a więc sorty poziomu co najmniej 1) \enquote{trzymają} pewne obiekty matematyczne, np. term (liczba) $1$ jest \enquote{trzymana} przez typ \Lean{Nat : Type 0}. Typy typu \Lean{Prop} (czyli sorty poziomu 0) nie \enquote{trzymają} nic. Tego typu będą więc twierdzenia, od których nie wymagamy (albo nawet nie chcemy), żeby trzymały swój dowód (\textit{proof irrelevance}).
 
 \subsection{Rachunek zdań i pierwsze taktyki}
 
-\subsubsection*{Taktyki \texttt{intro}, \texttt{exact} i \texttt{apply}}
+Od tego miejsca będziemy stosować logikę klasyczną. Jak Lean radzi sobie z rozbieżnościami między logiką intuicjonistyczną a klasyczną? Definiuje aksjomat wyboru:
+\centerLean[,]{axiom Classical.choice {α : Sort u} : Nonempty α → α}
+z którego następnie, dzięki twierdzeniu Diaconescu, wyprowadza prawo wyłączonego środka \Lean{Classical.em} oraz wiele innych praw logiki klasycznej, jak chociażby silne prawo podwójnego przeczenia \Lean{Classical.not_not}. Niżej omawiane taktyki Leana korzystają z tych aksjomatów, gdy jest to konieczne.
+
+\subsubsection{Taktyki \texttt{intro}, \texttt{exact} i \texttt{apply}}
 
 Jeśli cel dowodzenia znajduje się wśród założeń, to wystarczy go wskazać za pomocą taktyki \Lean{exact}. Jeśli cel jest w postaci \Lean{P → Q}, to możemy użyć taktyki \Lean{intro}, aby wprowadzić do dowodu założenie \Lean{P} i zmienić cel na \Lean{Q}.
 \begin{minted}{lean4}
@@ -572,7 +697,7 @@ example {P : Prop} : P → P := by
   exact h
 \end{minted}
 
-Jeśli celem jest \Lean{Q}, a mamy wśród założeń \Lean{P → Q}, to możemy użyć taktyki \Lean{apply}, aby zmienić cel na \Lean{P}. Możemy stosować również aplikację znaną z (typowanego) rachunku lambda.
+Jeśli celem jest \Lean{Q}, a mamy wśród założeń \Lean{P → Q}, to możemy użyć taktyki \Lean{apply}, aby zmienić cel na \Lean{P}. Możemy stosować również aplikację znaną z typowanego rachunku lambda.
 \begin{minted}{lean4}
 example {P Q : Prop} (h₁ : P → Q) (h₂ : P) : Q := by
   apply h₁
@@ -582,7 +707,7 @@ example {P Q : Prop} (h₁ : P → Q) (h₂ : P) : Q := by
   exact h₁ h₂
 \end{minted}
 
-\subsubsection*{Koniunkcja i alternatywa}
+\subsubsection{Koniunkcja i alternatywa}
 
 W Lean istnieje struktura \Lean{And}, której jedynym konstrukturem jest
 \centerLean[.]{And.intro {a b : Prop} (left : a) (right : b) : a ∧ b}
@@ -648,21 +773,38 @@ example {P Q : Prop} (h : P) : P ∨ Q := by
     Bardziej dokładnie, taktyka \Lean{constructor} używa pierwszego pasującego konstruktora struktury, a taktyki \Lean{left} i \Lean{right} używają odpowiednio pierwszego i drugiego konstruktora struktury, która ma dokładnie dwa konstruktory. Nie są one przypisane do struktur \Lean{And} i \Lean{Or}. W szczególności, zamiast \Lean{left} zawsze można używać \Lean{constructor}, ale sensowność takiego działania pozostawiamy do oceny Czytelnikowi.
 \end{remark}
 
-\subsubsection*{Nawiasowanie}
+\subsubsection{Negacja}
 
-\subsubsection*{Negacja}
+Podobnie jak w IRZ, \Lean{¬P} definiujemy jako \Lean{P → False}, gdzie \Lean{False} jest typem bez termów (i bez konstruktora). Bardzo łatwo jest więc dowieść, że $\neg (P \land \neg P)$.
+\begin{minted}{lean4}
+example (P : Prop) : ¬(P ∧ ¬P) := by
+  intro h
+  exact h.right h.left
+\end{minted}
 
-\subsubsection*{Taktyki \texttt{assumption}, \texttt{contradiction}, \texttt{trivial} oraz \texttt{<;>}}
+Z fałszu możemy oczywiście dowieść wszystko. W Leanie \textit{ex falso quodlibet} jest realizowane przez \Lean{False.elim} lub \Lean{absurd}.
+\begin{minted}{lean4}
+example {P Q : Prop} (h : P) (nh : ¬P) : Q := by
+  exact False.elim (nh h)
+\end{minted}
+
+\begin{minted}{lean4}
+example {P Q : Prop} (h : P) (nh : ¬P) : Q := by
+  exact absurd h nh
+\end{minted}
+
+
+\subsubsection{Taktyki \texttt{assumption}, \texttt{contradiction}, \texttt{trivial} oraz \texttt{<;>}}
 
 Poniższy przykład (reguła \textit{modus tollendo ponens}) Czytelnik powinien już być w stanie zrozumieć. Pokażemy, jak udowodnić go trochę prościej.
 \begin{minted}{lean4}
 example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
   rcases h with hp | hq
-  · apply False.elim (not_p hp)
+  · exact False.elim (not_p hp)
   · exact hq
 \end{minted}
 
-Zamiast \Lean{exact hq} możemy użyć taktyki \Lean{assumption}, która sprawdza, czy cel jest wśród założeń (nie musimy go wskazywać). Zamiast \Lean{apply False.elim} możemy użyć taktyki \Lean{contradiction}, która sprawdza, czy wśród założeń znajdują się dwa trywialne sprzeczne stwierdzenia.
+Zamiast \Lean{exact hq} możemy użyć taktyki \Lean{assumption}, która sprawdza, czy cel jest wśród założeń (nie musimy go wskazywać). Zamiast \Lean{False.elim} możemy użyć taktyki \Lean{contradiction}, która sprawdza, czy wśród założeń znajdują się dwa trywialne sprzeczne stwierdzenia.
 \begin{minted}{lean4}
 example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
   rcases h with hp | hq
