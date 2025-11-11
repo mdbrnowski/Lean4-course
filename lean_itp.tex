@@ -34,7 +34,7 @@ oraz jego dowód:
 \begin{displayquote}
     Jeśli $\sqrt{2}^{\sqrt{2}} \in \QQ$, to $a = b = \sqrt{2}$, w przeciwnym razie niech $a = \sqrt{2}^{\sqrt{2}}$ oraz $b = \sqrt{2}$, wtedy $a^b = 2 \in \QQ$.
 \end{displayquote}
-Dowód ten jest oczywiście słuszny na gruncie logiki klasycznej, ale nie jest konstruktywny, ponieważ dalej nie znamy odpowiednich liczb $a$ i $b$. W logice konstruktywnej zdanie jest prawdziwe, jeśli można podać jest \vocab{konstrukcję} (tzn. intuicyjny dowód), zgodnie z interpretacją Brouwera-Heytinga-Kolmogorowa:
+Dowód ten jest oczywiście słuszny na gruncie logiki klasycznej, ale nie jest konstruktywny, ponieważ dalej nie znamy odpowiednich liczb $a$ i $b$. W logice konstruktywnej zdanie jest prawdziwe, jeśli można podać jego \vocab{konstrukcję} (tzn. intuicyjny dowód), zgodnie z interpretacją Brouwera-Heytinga-Kolmogorowa:
 \begin{itemize}[noitemsep]
     \item konstrukcja dla $A \land B$ to konstrukcja dla $A$ oraz konstrukcja dla $B$,
     \item konstrukcja dla $A \lor B$ to konstrukcja dla $A$ lub konstrukcja dla $B$ wraz z zaznaczeniem, która z nich to jest,
@@ -574,7 +574,8 @@ Jeśli mamy pewne stwierdzenie (z dowodem), którego nie będziemy używać, wi�
 \begin{minted}{lean4}
 example (a : Nat) : add 0 a = a := -- dowód
 \end{minted}
-Samo sformuowanie twierdzeń, lematów i przykładów jest często pewną trudnością. Możemy być więc w sytuacji, gdy chcemy najpierw sformuować tezę, a jej dowód zostawić na później. W takim przypadku nieodzowne będzie słowo kluczowe \Lean{sorry}, dzięki któremu program się skompiluje (z ostrzeżeniem), mimo braku dowodu.
+Samo sformułowanie twierdzeń, lematów i przykładów jest często pewną trudnością. Możemy być więc w sytuacji, gdy chcemy najpierw sformułować tezę, a jej dowód zostawić na później.
+W takim przypadku nieodzowne będzie słowo kluczowe \Lean{sorry}, dzięki któremu program się skompiluje (z ostrzeżeniem), mimo braku dowodu.
 \begin{minted}{lean4}
 theorem pow_comm (a b : Nat) : a ^ b = b ^ a :=
   sorry
@@ -623,7 +624,8 @@ wielowierszowy -/
 #eval Nat.add 2 3 -- 5
 \end{minted}
 
-\subparagraph{Operatory potoku i odwróconego potoku} Jak na porządny język programowania przystało, Lean posiada operatory umożliwiające kontrolę kolejności ewaluacji wyrażeń. Operatory \texttt{<|} i \texttt{|>} zachowują się tak samo jak w F\# czy Elm, sam operator \texttt{|>} znajdziemy również w Elixirze czy OCaml-u. W Haskellu odpowiadają one odpowiednio operatorom \texttt{\$} i \texttt{\&}. Przykłady użycia:
+\subparagraph{Operatory potoku i odwróconego potoku} Jak na porządny język programowania przystało, Lean posiada operatory umożliwiające kontrolę kolejności ewaluacji wyrażeń. Operatory \texttt{<|} i \texttt{|>} zachowują się tak samo jak w F\# czy Elm, sam operator \texttt{|>} znajdziemy również w Elixirze czy OCaml-u.
+W Haskellu odpowiadają one odpowiednio operatorom \texttt{\$} i \texttt{\&}. Przykłady użycia:
 \begin{minted}{lean4}
 #eval Nat.add 1 (Nat.mul 2 3)   -- 7
 #eval Nat.add 1 <| Nat.mul 2 3  -- 7
@@ -637,7 +639,8 @@ Dowodząc twierdzenie, lemat, czy przykład, możemy wybrać jeden z dwóch tryb
     \item \vocab{tryb termowy} (ang. \textit{term mode}), w którym dowód jest pojedynczym (potencjalnie długim) termem,
     \item \vocab{tryb taktyczny} (ang. \textit{tactic mode}), w którym dowód jest ciągiem \vocab{taktyk} modyfikujących stan dowodu.
 \end{itemize}
-Pierwszy jest zbliżony do rachunku lambda, drugi bardziej przypomina tradycyjne dowodzenie matematyczne. Często proste fakty łatwiej udowodnić w trybie termowym, a bardziej złożone w trybie taktycznym. Oto przykład dowodu (a właściwie zastosowania twierdzenia) w obu trybach:
+Pierwszy jest zbliżony do rachunku lambda, drugi bardziej przypomina tradycyjne dowodzenie matematyczne. Często proste fakty łatwiej udowodnić w trybie termowym, a bardziej złożone w trybie taktycznym.
+Oto przykład dowodu (a właściwie zastosowania twierdzenia) w obu trybach:
 \begin{minted}{lean4}
 -- term mode (aplikacja 2a i 2b do twierdzenia Nat.add_comm)
 example (a b : Nat) : 2 * a + 2 * b = 2 * b + 2 * a := Nat.add_comm (2 * a) (2 * b)
@@ -647,7 +650,8 @@ example (a b : Nat) : 2 * a + 2 * b = 2 * b + 2 * a := by rw [Nat.add_comm]
 
 \subsubsection{Argumenty i ich rodzaje}
 
-Czytelnik już zapewne zdążył zauważyć, że twierdzenia w Leanie zazwyczaj przyjmują argumenty. Na przykład w twierdzeniu \Lean{Nat.add_comm} mamy argumenty \Lean{(n : Nat)} i \Lean{(m : Nat)}, zapisywane jako \Lean{(n m : Nat)}. Takimi argumentami będą również założenia twierdzenia, na przykład w:
+Czytelnik już zapewne zdążył zauważyć, że twierdzenia w Leanie zazwyczaj przyjmują argumenty. Na przykład w twierdzeniu \Lean{Nat.add_comm} mamy argumenty \Lean{(n : Nat)} i \Lean{(m : Nat)}, zapisywane jako \Lean{(n m : Nat)}.
+Takimi argumentami będą również założenia twierdzenia, na przykład w:
 \begin{minted}{lean4}
 theorem tw (a : Nat) (b : Nat) (c : Nat) (h₁ : a < b) (h₂ : b < c) : a < c := sorry
 \end{minted}
@@ -659,7 +663,8 @@ axiom two_lt_three : 2 < 3
 #check tw 1 2 3 one_lt_two two_lt_three
 \end{minted}
 
-Widać tutaj więc pewną redundancję -- argumenty \Lean{a}, \Lean{b} i \Lean{c} są w pełni określone przez założenia \Lean{h₁} i \Lean{h₂}. Aby tego uniknąć, Lean pozwala na definiowanie argumentów \textit{implicit}, czyli takich, które mogą być pominięte przy wywoływaniu danej funkcji lub twierdzenia. W tym celu używamy nawiasów klamrowych zamiast okrągłych:
+Widać tutaj więc pewną redundancję -- argumenty \Lean{a}, \Lean{b} i \Lean{c} są w pełni określone przez założenia \Lean{h₁} i \Lean{h₂}.
+Aby tego uniknąć, Lean pozwala na definiowanie argumentów \textit{implicit}, czyli takich, które mogą być pominięte przy wywoływaniu danej funkcji lub twierdzenia. W tym celu używamy nawiasów klamrowych zamiast okrągłych:
 \begin{minted}{lean4}
 theorem tw {a : Nat} {b : Nat} {c : Nat} (h₁ : a < b) (h₂ : b < c) : a < c := sorry
 \end{minted}
@@ -677,7 +682,8 @@ Są one częścią nieskończonej hierarchii typów \Lean{Sort u}, gdzie \Lean{u
 Typ \Lean{Sort u} jest więc typu \Lean{Sort (u + 1)}.
 \Lean{Type u} jest synonimem dla \Lean{Sort (u + 1)}, a \Lean{Prop} jest synonimem dla \Lean{Sort 0}.
 
-Skąd takie przesunięcie? Typy typu \Lean{Type u} (a więc sorty poziomu co najmniej 1) \enquote{trzymają} pewne obiekty matematyczne, np. term (liczba) $1$ jest \enquote{trzymana} przez typ \Lean{Nat : Type 0}. Typy typu \Lean{Prop} (czyli sorty poziomu 0) nie \enquote{trzymają} nic. Tego typu będą więc twierdzenia, od których nie wymagamy (albo nawet nie chcemy), żeby trzymały swój dowód (\textit{proof irrelevance}).
+Skąd takie przesunięcie? Typy typu \Lean{Type u} (a więc sorty poziomu co najmniej 1) \enquote{trzymają} pewne obiekty matematyczne, np. term (liczba) $1$ jest \enquote{trzymana} przez typ \Lean{Nat : Type 0}.
+Typy typu \Lean{Prop} (czyli sorty poziomu 0) nie \enquote{trzymają} nic. Tego typu będą więc twierdzenia, od których nie wymagamy (albo nawet nie chcemy), żeby trzymały swój dowód (\textit{proof irrelevance}).
 
 \subsection{Rachunek zdań i pierwsze taktyki}
 
