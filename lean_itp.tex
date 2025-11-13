@@ -570,6 +570,7 @@ definiuje funkcję \Lean{add}, która przyjmuje dwie liczby naturalne (typ \Lean
 \begin{minted}{lean4}
 theorem add_zero (a : Nat) : add a 0 = a := -- dowód
 \end{minted}
+przy czym używanie \Lean{lemma} wymaga dodania Mathliba (\Lean{import Mathlib.Tactic}).
 Jeśli mamy pewne stwierdzenie (z dowodem), którego nie będziemy używać, więc nie potrzebuje nazwy, możemy użyć słowa kluczowego \Lean{example}:
 \begin{minted}{lean4}
 example (a : Nat) : add 0 a = a := -- dowód
@@ -839,6 +840,11 @@ Jeśli chcemy użyć tej samej taktyki dla różnych przypadków, to możemy uż
 example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
   cases h <;> trivial
 \end{minted}
+
+\begin{problem}
+    Zrobić pierwszy zestaw zadań:
+    \inputminted{lean4}{problemsets/problemset01.lean}
+\end{problem}
 
 \begin{thebibliography}{9}
     \bibitem{SorensenUrzyczyn} M. H. Sørensen, P. Urzyczyn, Lectures on the Curry-Howard Isomorphism, \textit{Studies in Logic and the Foundations of Mathematics}, vol. 149, Elsevier, 2006.
