@@ -561,13 +561,15 @@ który od razu dodaje Mathlib (de facto bibliotekę standardową, zawierającą 
 
 Póki co nie będziemy się zagłębiać w składnię, a jedynie wymienimy kilka podstawowych elementów, które posłużą nam do w miarę swobodnego poruszania się w Leanie (a przynajmniej jego części dotyczącej dowodzenia twierdzeń matematycznych).
 
-\subparagraph{Funkcje i stałe} Funkcje (oraz stałe, które są funkcjami stałej wartości) definiujemy za pomocą słowa kluczowego \Lean{def}, na przykład:
+\subparagraph{Funkcje i stałe}
+Funkcje (oraz stałe, które są funkcjami stałej wartości) definiujemy za pomocą słowa kluczowego \Lean{def}, na przykład:
 \begin{minted}{lean4}
 def add (a b : Nat) : Nat := a + b
 \end{minted}
 definiuje funkcję \Lean{add}, która przyjmuje dwie liczby naturalne (typ \Lean{Nat}) i zwraca ich sumę.
 
-\subparagraph{Twierdzenia i przykłady} Twierdzenia definiujemy za pomocą słowa kluczowego \Lean{theorem} lub \Lean{lemma}, na przykład:
+\subparagraph{Twierdzenia i przykłady}
+Twierdzenia definiujemy za pomocą słowa kluczowego \Lean{theorem} lub \Lean{lemma}, na przykład:
 \begin{minted}{lean4}
 theorem add_zero (a : Nat) : add a 0 = a := -- dowód
 \end{minted}
@@ -594,12 +596,14 @@ theorem pow_comm (a b : Nat) : a ^ b = b ^ a := by
     \end{minted}
 \end{remark}
 
-\subparagraph{Aksjomaty} Czasami będziemy chcieli wprowadzić pewne aksjomaty, czyli stwierdzenia przyjmowane bez dowodu. W tym celu używamy słowa kluczowego \Lean{axiom}:
+\subparagraph{Aksjomaty}
+Czasami będziemy chcieli wprowadzić pewne aksjomaty, czyli stwierdzenia przyjmowane bez dowodu. W tym celu używamy słowa kluczowego \Lean{axiom}:
 \begin{minted}{lean4}
 axiom add_comm (a b : Nat) : a + b = b + a
 \end{minted}
 
-\subparagraph{Komentarze} Komentować kod można i należy następująco:
+\subparagraph{Komentarze}
+Komentować kod można i należy następująco:
 \begin{minted}{lean4}
 def foo : Nat := 42 -- to jest komentarz jednowierszowy
 /- to jest
@@ -607,7 +611,8 @@ komentarz
 wielowierszowy -/
 \end{minted}
 
-\subparagraph{Sprawdzenie typu} Sprawdzić typ termu (czyli, przez izomorfizm Curry'ego-Howarda, również wypowiedź twierdzenia), możemy następująco:
+\subparagraph{Sprawdzenie typu}
+Sprawdzić typ termu (czyli, przez izomorfizm Curry'ego-Howarda, również wypowiedź twierdzenia), możemy następująco:
 \begin{minted}{lean4}
 #check Nat -- Nat : Type
 #check Nat.add -- Nat.add : Nat → Nat → Nat
@@ -621,12 +626,14 @@ wielowierszowy -/
     Skoro \Lean{Nat} jest typu \Lean{Type}, to jaki jest typ \Lean{Type}? Jaki jest typ tego typu?
 \end{problem}
 
-\subparagraph{Ewaluacja funkcji} Czasami, zamiast dowodzić twierdzeń, będziemy chcieli po prostu obliczyć wartość pewnej funkcji. Możemy to zrobić tak:
+\subparagraph{Ewaluacja funkcji}
+Czasami, zamiast dowodzić twierdzeń, będziemy chcieli po prostu obliczyć wartość pewnej funkcji. Możemy to zrobić tak:
 \begin{minted}{lean4}
 #eval Nat.add 2 3 -- 5
 \end{minted}
 
-\subparagraph{Operatory potoku i odwróconego potoku} Jak na porządny język programowania przystało, Lean posiada operatory umożliwiające kontrolę kolejności ewaluacji wyrażeń. Operatory \texttt{<|} i \texttt{|>} zachowują się tak samo jak w F\# czy Elm, sam operator \texttt{|>} znajdziemy również w Elixirze czy OCaml-u.
+\subparagraph{Operatory potoku i odwróconego potoku}
+Jak na porządny język programowania przystało, Lean posiada operatory umożliwiające kontrolę kolejności ewaluacji wyrażeń. Operatory \texttt{<|} i \texttt{|>} zachowują się tak samo jak w F\# czy Elm, sam operator \texttt{|>} znajdziemy również w Elixirze czy OCaml-u.
 W Haskellu odpowiadają one odpowiednio operatorom \texttt{\$} i \texttt{\&}. Przykłady użycia:
 \begin{minted}{lean4}
 #eval Nat.add 1 (Nat.mul 2 3)   -- 7
@@ -693,8 +700,7 @@ Od tego miejsca będziemy stosować logikę klasyczną. Jak Lean radzi sobie z r
 \centerLean[,]{axiom Classical.choice {α : Sort u} : Nonempty α → α}
 z którego następnie, dzięki twierdzeniu Diaconescu, wyprowadza prawo wyłączonego środka \Lean{Classical.em} oraz wiele innych praw logiki klasycznej, jak chociażby silne prawo podwójnego przeczenia \Lean{Classical.not_not}. Niżej omawiane taktyki Leana korzystają z tych aksjomatów, gdy jest to konieczne.
 
-\subsubsection{Taktyki \texttt{intro}, \texttt{exact} i \texttt{apply}}
-
+\subparagraph{Taktyki \texttt{intro}, \texttt{exact} i \texttt{apply}}
 Jeśli cel dowodzenia znajduje się wśród założeń, to wystarczy go wskazać za pomocą taktyki \Lean{exact}. Jeśli cel jest w postaci \Lean{P → Q}, to możemy użyć taktyki \Lean{intro}, aby wprowadzić do dowodu założenie \Lean{P} i zmienić cel na \Lean{Q}.
 \begin{minted}{lean4}
 example {P : Prop} (h : P) : P := by
@@ -715,8 +721,7 @@ example {P Q : Prop} (h₁ : P → Q) (h₂ : P) : Q := by
   exact h₁ h₂
 \end{minted}
 
-\subsubsection{Koniunkcja i alternatywa}
-
+\subparagraph{Koniunkcja}
 W Lean istnieje struktura \Lean{And}, której jedynym konstrukturem jest
 \centerLean[.]{And.intro {a b : Prop} (left : a) (right : b) : a ∧ b}
 Jako że \Lean{And.intro} ma typ \Lean{a → b → a ∧ b}, to świetnie nadaje się do użycia z \Lean{apply}, które wprowadzi dwa cele (do rozwiązania jeden po drugim).
@@ -738,7 +743,18 @@ example {P Q : Prop} (h : P ∧ Q) : P := by
   exact h.left
 \end{minted}
 
-Podobnie istnieje struktura \Lean{Or}, której konstruktorami są
+
+\subparagraph{Równoważność}
+Struktura \Lean{Iff}, która reprezentuje równoważność logiczną, ma konstruktor
+\centerLean[,]{Iff.intro {a b : Prop} (mp : a → b) (mpr : b → a) : a ↔ b}
+gdzie pierwszy argument to \textit{modus ponens} ($a \implies b$), a drugi to \textit{modus ponens reversed} ($b \implies a$). Sposób użycia jest analogiczny jak w przypadku koniunkcji. Na przykład
+\begin{minted}{lean4}
+example {P Q : Prop} (h : P ↔ Q) : Q → P := by
+  exact h.mpr
+\end{minted}
+
+\subparagraph{Alternatywa}
+Istnieje również struktura \Lean{Or}, której konstruktorami są
 \centerLean{inl {a b : Prop} (h : a) : a ∨ b}
 oraz
 \centerLean[.]{inr {a b : Prop} (h : b) : a ∨ b}
@@ -781,8 +797,7 @@ example {P Q : Prop} (h : P) : P ∨ Q := by
     Bardziej dokładnie, taktyka \Lean{constructor} używa pierwszego pasującego konstruktora struktury, a taktyki \Lean{left} i \Lean{right} używają odpowiednio pierwszego i drugiego konstruktora struktury, która ma dokładnie dwa konstruktory. Nie są one przypisane do struktur \Lean{And} i \Lean{Or}. W szczególności, zamiast \Lean{left} zawsze można używać \Lean{constructor}, ale sensowność takiego działania pozostawiamy do oceny Czytelnikowi.
 \end{remark}
 
-\subsubsection{Negacja}
-
+\subparagraph{Negacja}
 Podobnie jak w IRZ, \Lean{¬P} definiujemy jako \Lean{P → False}, gdzie \Lean{False} jest typem bez termów (i bez konstruktora). Bardzo łatwo jest więc dowieść, że $\neg (P \land \neg P)$.
 \begin{minted}{lean4}
 example (P : Prop) : ¬(P ∧ ¬P) := by
@@ -802,8 +817,7 @@ example {P Q : Prop} (h : P) (nh : ¬P) : Q := by
 \end{minted}
 
 
-\subsubsection{Taktyki \texttt{assumption}, \texttt{contradiction}, \texttt{trivial} oraz \texttt{<;>}}
-
+\subparagraph{Taktyki \texttt{assumption}, \texttt{contradiction}, \texttt{trivial} oraz operator \texttt{<;>}}
 Poniższy przykład (reguła \textit{modus tollendo ponens}) Czytelnik powinien już być w stanie zrozumieć. Pokażemy, jak udowodnić go trochę prościej.
 \begin{minted}{lean4}
 example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
@@ -848,6 +862,8 @@ example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
 \end{problem}
 
 \begin{thebibliography}{9}
+    \bibitem{Barendregt2013} H. Barendregt, W. Dekkers, R. Statman, Lambda Calculus with Types, \textit{Perspectives in Logic}, Cambridge University Press, 2013.
+    \bibitem{CsirmazGyenis} L. Csirmaz, Z. Gyenis, Mathematical Logic: Exercises and Solutions, \textit{Problem Books in Mathematics}, Springer, 2022.
     \bibitem{SorensenUrzyczyn} M. H. Sørensen, P. Urzyczyn, Lectures on the Curry-Howard Isomorphism, \textit{Studies in Logic and the Foundations of Mathematics}, vol. 149, Elsevier, 2006.
 \end{thebibliography}
 
