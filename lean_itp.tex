@@ -1,6 +1,10 @@
 % arara: latexmk: { engine: lualatex, options: [-synctex=1, -aux-directory=./build] }
-\PassOptionsToPackage{cache=false}{minted} % remove when gpoore/minted#467 is fixed
 \documentclass[polish,pretty,bibliography=totocnumbered]{angav}
+% [begin] remove when gpoore/minted#467 is fixed
+\makeatletter
+\let\pdf@mdfivesum\pdf@mdfivesumnative
+\makeatother
+% [end] remove when gpoore/minted#467 is fixed
 
 \title{Lean \& ITP}
 \author{Michał Dobranowski}
@@ -860,6 +864,102 @@ example {P Q : Prop} (h : P ∨ Q) (not_p : ¬P) : Q := by
     Zrobić pierwszy zestaw zadań:
     \inputminted{lean4}{problemsets/problemset01.lean}
 \end{problem}
+
+\subsection{Przekształcenia algebraiczne i równości}
+
+Jeśli nasz cel jest trywialną równością, możemy użyć taktyki \Lean{rfl} (od ang. \textit{reflexivity}).
+\begin{minted}{lean4}
+example (a : Nat) : a = a := by
+  rfl
+
+example : 1 + 1 = 2 := by
+  rfl
+\end{minted}
+
+Jeśli nasz cel nie jest równością, ale wymaga jedynie \emph{obliczenia}, a nie dowodu (jak w drugim przykładzie powyżej), wystarczy użyć taktyki \Lean{decide}.
+\begin{minted}{lean4}
+example : 2 * 3 + 1 ≥ 4 := by
+  decide
+\end{minted}
+
+Często jednak będziemy chcieli użyć jakiejś równości do zmiany fragmentu bardziej skomplikowanej formuły. W tym celu możemy użyć taktyki \Lean{rewrite}, lub \Lean{rw}, która działa jak \Lean{rewrite}, ale próbuje użyć jeszcze \Lean{rfl}.
+\begin{minted}{lean4}
+example (h : a = b) : a^3 + 1 = b^3 + 1 := by
+  rewrite [h]
+  rfl
+
+example (h : a = b) : a^3 + 1 = b^3 + 1 := by
+  rw [h]
+\end{minted}
+Domyślnie te taktyki przepisują lewą stronę równości na prawą. Aby przepisać w drugą stronę, należy użyć \Lean{←} przed nazwą równości.
+\begin{minted}{lean4}
+example {a b c : Nat} (h₁ : 2 * b = a) (h₂ : b = 2 * c) : a = 4 * c := by
+  rewrite [←h₁]
+  rewrite [h₂]
+  rewrite [←Nat.mul_assoc]
+  rfl
+
+example {a b c : Nat} (h₁ : 2 * b = a) (h₂ : b = 2 * c) : a = 4 * c := by
+  rw [←h₁, h₂, ←Nat.mul_assoc]
+\end{minted}
+Jeśli chcemy przepisać nie część celu, a któregoś z założeń, wystarczy go wskazać za pomocą \Lean{at}. Możemy też przepisywać kilka formuł naraz, oddzielając je spacjami, gdzie cel oznaczamy przez \Lean{⊢}.
+\begin{minted}{lean4}
+example {a b c : Nat} (h₁ : 2 * b = a) (h₂ : b = 2 * c) : a = 4 * c := by
+  rw [h₂, ←Nat.mul_assoc] at h₁
+  rw [h₁]
+
+example {a b : Nat} (h_eq : a = b + 1) (h : a + b = 4) : 2 * a = 5 := by
+  rw [h_eq] at h ⊢
+  rw [Nat.two_mul]
+  rw [←Nat.add_assoc (b + 1) b 1]
+  rw [h]
+\end{minted}
+
+Bardzo często będziemy chcieli udowodnić najpierw jakiś cel pośredni, żeby następnie wykorzystać go do udowodnienia głównego celu. W takiej sytuacji nie trzeba definiować nowego lematu, a wystarczy użyć taktyki \Lean{have}.
+\begin{minted}{lean4}
+example {a : Nat} : a * 2 + 1 = 2 * a + 1 := by
+  -- h₁, h₂, h₃ to identyczne założenia
+  have h₁ : a * 2 = 2 * a := by rw [Nat.mul_comm]
+  have h₂ : a * 2 = 2 * a := Nat.mul_comm a 2
+  have h₃ := Nat.mul_comm a 2
+  apply Nat.add_left_inj.mpr
+  assumption
+
+\end{minted}
+Takie założenie działa jak każde inne twierdzenie, możemy je więc udowodnić w trybie termowym lub taktycznym.
+Jeśli udowadniamy je w trybie termowym, to oczywiście nie musimy nawet formułować jego pełnej treści.
+Możemy po \Lean{have} nie dać żadnej nazwy, wtedy Lean automatycznie nazwie to założenie \Lean{this}.
+
+\subsection{Rachunek kwantyfikatorów}
+
+\subparagraph{Kwantyfikator uniwersalny}
+Z kwantyfikatora $\forall$ korzystaliśmy już wielokrotnie, chociaż niebezpośrednio. Na przykład twierdzenie $\forall x \in \mathbb{N} (x + 0 = x)$ zapisywaliśmy jako
+\begin{minted}{lean4}
+theorem add_zero (x : Nat) : x + 0 = x := sorry
+\end{minted}
+Możemy je również zapisać i udowodnić jako
+\begin{minted}{lean4}
+theorem add_zero' : ∀ x : Nat, x + 0 = x := by
+  intro x
+  exact add_zero x
+\end{minted}
+korzystając z poznanej już taktyki \Lean{intro}. Przeciwieństwem \Lean{intro} w tym kontekście jest taktyka \Lean{revert}, która przenosi podaną zmienną z założeń do kwantyfikatora $\forall$ w celu.
+
+\subparagraph{Kwantyfikator egzystencjalny}
+Formuły z kwantyfikatorem $\exists$ najlepiej dowodzić za pomocą dostępnej w Mathlibie taktyki \Lean{use}.
+\begin{minted}{lean4}
+example : ∃ n : Nat, n > 1000 := by
+  use 1001
+  decide
+\end{minted}
+
+\begin{problem}
+    Dowiedzieć się, jak działa kwantyfikator $\exists!$ w Leanie (zdefiniowany w pliku \Lean{Mathlib.Logic.ExistsUnique}).
+\end{problem}
+
+\subsection{Indukcja matematyczna}
+
+\todo[inline]{zrobić}
 
 \begin{thebibliography}{9}
     \bibitem{Barendregt2013} H. Barendregt, W. Dekkers, R. Statman, Lambda Calculus with Types, \textit{Perspectives in Logic}, Cambridge University Press, 2013.
