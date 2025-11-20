@@ -11,3 +11,4 @@ def info := λ (d : Wednesday) ↦ meet(D17.3_27c, d, "18:30")
 Zestawy zadań:
 
 * [Zestaw 1](problemsets/problemset01.lean) (logika)
+* [Zestaw 2](problemsets/problemset02.lean) (przekształcenia, równości i nierówności, kwantyfikatory)
