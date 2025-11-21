@@ -16,7 +16,7 @@ example : ∃! n : Nat, n ^ 2 = 9 := sorry
 example {x y : Nat} (h_eq : 3 * x = 9) (h_lt : 2 * y < 8) : (y * 2) * x * 3 ≤ 100 := sorry
 
 -- Zadanie 6
-example (m n : Nat) (h₁ : ¬(m < n)) (h₂ : ¬(n < m)) : n = m := sorry
+example (m n : Nat) (h₁ : m ≥ n) (h₂ : n ≥ m) : n = m := sorry
 
 -- Zadanie 7
 axiom one_eq_two : 1 = 2
