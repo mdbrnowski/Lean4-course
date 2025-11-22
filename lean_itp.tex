@@ -552,8 +552,6 @@ W tym właśnie procesie przydaje się oprogramowanie takie jak Lean.
 
 \section{Podstawy dowodzenia w Lean}
 
-\subsection{Środowisko}
-
 Polecam używać VS Code z rozszerzeniem \textbf{Lean 4} lub Neovim z rozszerzeniem \textbf{lean.nvim}.
 Aby rozpocząć pracę, należy stworzyć projekt za pomocą
 \begin{minted}{bash}
@@ -688,7 +686,7 @@ Teraz możemy użyć tego twierdzenia jako
 
 Oprócz argumentów \textit{explicit} i \textit{implicit}, Lean pozwala na definiowanie argumentów \textit{instance implicit} oraz \textit{strict implicit}, oznaczanych odpowiednio przez $[\ldots]$ oraz $⦃\ldots⦄$. Zajmiemy się nimi później.
 
-\subsection{Typy Sort, Type i Prop}
+\subsubsection{Typy Sort, Type i Prop}
 
 W ramach problemu \ref{prob:type-of-type} Czytelnik miał okazję zastanowić się nad typami \Lean{Type}, \Lean{Type 1}, \Lean{Type 2} itd.
 Są one częścią nieskończonej hierarchii typów \Lean{Sort u}, gdzie \Lean{u} jest zmienną uniwersalną oznaczającą poziom uniwersum.
@@ -946,7 +944,7 @@ theorem add_zero' : ∀ x : Nat, x + 0 = x := by
 korzystając z poznanej już taktyki \Lean{intro}. Przeciwieństwem \Lean{intro} w tym kontekście jest taktyka \Lean{revert}, która przenosi podaną zmienną z założeń do kwantyfikatora $\forall$ w celu.
 
 \subparagraph{Kwantyfikator egzystencjalny}
-Formuły z kwantyfikatorem $\exists$ najlepiej dowodzić za pomocą dostępnej w Mathlibie taktyki \Lean{use}.
+Formuły z kwantyfikatorem $\exists$ najlepiej dowodzić za pomocą dostępnej w \Lean{Mathlib.Tactic.Use} taktyki \Lean{use}.
 \begin{minted}{lean4}
 example : ∃ n : Nat, n > 1000 := by
   use 1001
@@ -956,6 +954,44 @@ example : ∃ n : Nat, n > 1000 := by
 \begin{problem}
     Dowiedzieć się, jak działa kwantyfikator $\exists!$ w Leanie (zdefiniowany w pliku \Lean{Mathlib.Logic.ExistsUnique}).
 \end{problem}
+
+\begin{problem}
+    Zrobić drugi zestaw zadań:
+    \inputminted{lean4}{problemsets/problemset02.lean}
+\end{problem}
+
+\subsection{Taktyki automatyzujące dowodzenie}
+
+Lean posiada wiele taktyk automatyzujących dowodzenie, z których najważniejsze omówimy w tej sekcji.
+
+Udowodnijmy, że dla każdych $a, b \in \NN$ zachodzi $(a + b)^2 = a^2 + 2ab + b^2$.
+
+\begin{minted}{lean4}
+example {a b : Nat} : (a + b)^2 = a^2 + 2 * a * b + b^2 := by
+  rw [Nat.pow_two]
+  rw [Nat.mul_add]
+  rw [Nat.add_mul]
+  rw [Nat.add_mul]
+  rw [←Nat.pow_two]
+  rw [←Nat.pow_two]
+  rw [←Nat.add_assoc]
+  rw [Nat.mul_comm]
+  rw [Nat.add_assoc (a^2)]
+  rw [←Nat.two_mul]
+  rw [Nat.mul_assoc]
+\end{minted}
+
+Aby udowadniać podobne tożsamości w pierścieniach przemiennych oraz półpierścieniach przemiennych (na przykład w $\NN$), możemy użyć taktyki \Lean{ring}.
+\begin{minted}{lean4}
+import Mathlib.Tactic.Ring
+
+example {a b : Nat} : (a + b)^2 = a^2 + 2 * a * b + b^2 := by
+  ring
+\end{minted}
+
+Jeśli nie chcemy od razu udowadniać równości, a jedynie uprościć cel (np. nierówność), zamiast \Lean{ring} możemy użyć taktyki \Lean{ring_nf} (od ang. \textit{normal form}).
+
+\subsection{Typy zależne, klasy typów, instancje}
 
 \subsection{Indukcja matematyczna}
 
