@@ -991,11 +991,264 @@ example {a b : Nat} : (a + b)^2 = a^2 + 2 * a * b + b^2 := by
 
 Jeśli nie chcemy od razu udowadniać równości, a jedynie uprościć cel (np. nierówność), zamiast \Lean{ring} możemy użyć taktyki \Lean{ring_nf} (od ang. \textit{normal form}).
 
-\subsection{Typy zależne, klasy typów, instancje}
-
 \subsection{Indukcja matematyczna}
 
 \todo[inline]{zrobić}
+
+\section{Studia przypadków}
+
+\subsection{Przestrzeń metryczna}
+
+\begin{definition}[przestrzeń pseudometryczna]
+    Niech $X$ będzie niepustym zbiorem, a $d : X \times X \to \RR$ funkcją, zwaną pseudometryką, spełniającą następujące warunki dla dowolnych $x, y, z \in X$:
+    \begin{itemize}[nosep]
+        \item $d(x, x) = 0$,
+        \item $d(x, y) = d(y, x)$,
+        \item $d(x, y) \leq d(x, z) + d(z, y)$.
+    \end{itemize}
+    Wówczas para $(X, d)$ jest przestrzenią pseudometryczną.
+\end{definition}
+
+\begin{definition}[przestrzeń metryczna]
+    Przestrzeń pseudometryczna $(X, d)$ jest przestrzenią metryczną, jeśli dodatkowo spełniony jest warunek:
+    \[ d(x, y) = 0 \iff x = y \]
+    dla dowolnych $x, y \in X$.
+\end{definition}
+
+\subsection{Grupa abelowa}
+
+\begin{definition}[magma]
+    Niech $R$ będzie zbiorem niepustym oraz $\cdot : R \times R \to R$ działaniem wewnętrznym na $R$. Parę $(R, \cdot)$ nazywamy wtedy magmą lub grupoidem.
+\end{definition}
+
+\begin{definition}[półgrupa]
+    Magma $(R, \cdot)$ jest półgrupą, jeśli działanie $\cdot$ jest łączne, tzn. dla dowolnych $a, b, c \in R$ zachodzi
+    \[ (a \cdot b) \cdot c = a \cdot (b \cdot c). \]
+\end{definition}
+
+\begin{definition}[monoid]
+    Półgrupa $(R, \cdot)$ jest monoidem, jeśli istnieje element neutralny $e \in R$, tzn. dla dowolnego $a \in R$ zachodzi
+    \[ e \cdot a = a \cdot e = a. \]
+\end{definition}
+
+\begin{definition}[grupa]
+    Monoid $(R, \cdot)$ jest grupą, jeśli dla dowolnego $a \in R$ istnieje element odwrotny $a^{-1} \in R$, tzn. zachodzi
+    \[ a \cdot a^{-1} = a^{-1} \cdot a = e. \]
+\end{definition}
+
+\begin{definition}[grupa abelowa]
+    Grupa $(R, \cdot)$ jest grupą abelową, jeśli działanie $\cdot$ jest przemienne, tzn. dla dowolnych $a, b \in R$ zachodzi
+    \[ a \cdot b = b \cdot a. \]
+    Warunek przemienności możemy wprowadzić na dowolnym poziomie, tworząc magmy, półgrupy czy monoidy przemienne (abelowe).
+\end{definition}
+
+Będziemy chcieli udowodnić, że pewna przykładowa struktura jest grupą abelową.
+
+\begin{theorem}
+    Udowodnij, że para $(A, \star)$ jest grupą abelową, gdzie $A = \QQ \setminus \{1\}$, a działanie $\star$ jest zdefiniowane jako
+    \[ a \star b = ab - a - b + 2. \]
+\end{theorem}
+
+Czytelnik powinien w tym momencie udowodnić to twierdzenie na kartce.
+
+Zacznijmy od zdefiniowania działania $\star$. Najłatwiej będzie to zrobić w ten sposób, że zdefiniujemy specjalny typ $A$, a działanie $\star$ jako mnożenie na tym typie.
+\begin{minted}{lean4}
+import Mathlib.Data.Rat.Init
+
+def A : Type := {x : ℚ // x ≠ 1}
+\end{minted}
+
+Po raz pierwszy spotykamy się z \vocab{podtypami} (ang. \textit{subtypes}), które pozwalają nam definiować typy jako inne typy z dodatkowym warunkiem. Aby skonstruować element podtypu, musimy podać element typu bazowego oraz dowód spełnienia warunku. Na przykład, aby skonstruować element $0 : A$, napiszemy:
+\begin{minted}{lean4}
+#check (⟨0, by decide⟩ : A)
+\end{minted}
+Element podtypu jest automatycznie wyposażony w wiele przydatnych pól, w tym: wartość, twierdzenie o spełnianiu warunku, twierdzenia o równoważności równości na typach i równości na podtypach.
+\todo[inline]{występuje tutaj ↑, o którym nic nie pisałem}
+\begin{minted}{lean4}
+def a0 := (⟨0, by decide⟩ : A)
+#check a0.val     -- ↑a0 : ℚ
+#check a0.prop    -- ↑a0 ≠ 1
+#check a0.coe_inj -- ↑a = ↑b ↔ a = b
+\end{minted}
+
+Zdefiniujmy działanie $\star$, póki co na liczbach wymiernych.
+\begin{minted}{lean4}
+def op (a b : ℚ) : ℚ := a * b - a - b + 2
+\end{minted}
+
+Teraz możemy pokazać, że $(A, \star)$ jest magmą, tzn. że $a \star b \in A$ dla dowolnych $a, b \in A$.
+
+\begin{minted}{lean4}
+lemma op_ne_one {a b : ℚ} (ha : a ≠ 1) (hb : b ≠ 1) : op a b ≠ 1 := by
+  intro h
+  unfold op at h
+  have : (a - 1) * (b - 1) = 0 := by linarith
+  rcases mul_eq_zero.mp this with ha' | hb'
+  · have : a = 1 := by linarith
+    contradiction
+  · have : b = 1 := by linarith
+    contradiction
+\end{minted}
+
+Mając powyższy lemat, możemy już stwierdzić, że $(A, \star)$ rzeczywiście jest magmą. W Leanie, magma multiplikatywna jest nazwana po prostu \Lean{Mul}, więc wystarczy zdeklarować instancję tej klasy typów dla naszego podtypu.
+\todo{Pojęcie klasy typów i instancji powinno być w poprzedniej sekcji.}
+\begin{minted}{lean4}
+instance : Mul A where
+  mul a b := ⟨op a.val b.val, op_ne_one a.prop b.prop⟩
+\end{minted}
+
+Teraz chcemy udowodnić, że $(A, \star)$ jest nie tylko magmą, ale i podgrupą, czyli że $\star$ jest łączne. Jest to nawet prostrze niż na karce.
+\begin{minted}{lean4}
+import Mathlib.Tactic.Ring
+
+instance : Semigroup A where
+  mul_assoc a b c := by
+    apply Subtype.ext
+    change op (op a.val b.val) c.val = op a.val (op b.val c.val)
+    unfold op
+    ring
+\end{minted}
+Musieliśmy użyć tutaj twierdzenia
+\centerLean{Subtype.ext {p : α → Prop} {a1 a2 : { x // p x }} : ↑a1 = ↑a2 → a1 = a2}
+oraz nowej taktyki, \Lean{change}, która pozwala nam zmienić cel na równoważny \emph{z definicji}.
+
+Teraz pokażemy, że $(A, \star)$ jest monoidem, czyli ma element neutralny. W tym celu należy powiedzieć, że typ $A$ ma jedynkę (równą $2$), a następnie, że ta jedynka istotnie jest elementem nautralnym, tzn. $2a = a \land a = 2a$. Nie trzeba pokazywać
+\begin{minted}{lean4}
+instance : One A where
+  one := ⟨2, by decide⟩
+
+instance : Monoid A where
+  one_mul a := by
+    apply Subtype.ext
+    change op 2 a.val = a.val
+    unfold op
+    ring
+  mul_one a := by
+    apply Subtype.ext
+    change op a.val 2 = a.val
+    unfold op
+    ring
+\end{minted}
+
+Aby pokazać, że $(A, \star)$ jest grupą, trzeba najpierw udowodnić, że $a^{-1} = \frac{a}{a - 1} \in A$, wskazać wzór na odwrotność, a na końcu pokazać, że istotnie spełnia on $a^{-1}a = 2$.
+\begin{minted}{lean4}
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+
+lemma op_inv_ne_one {a : ℚ} (ha : a ≠ 1) : a / (a - 1) ≠ 1 := by
+  intro h
+  have a_sub_one_ne_zero : a - 1 ≠ 0 := sub_ne_zero.mpr ha
+  have := (div_eq_one_iff_eq a_sub_one_ne_zero).mp h
+  linarith
+
+instance : Inv A where
+  inv a := ⟨a.val / (a.val - 1), op_inv_ne_one a.prop⟩
+
+instance : Group A where
+  inv_mul_cancel a := by
+    apply Subtype.ext
+    change op (a.val / (a.val - 1)) a.val = 2
+    unfold op
+    field_simp
+    have : (a.val - 1) / (a.val - 1) = 1 := by
+      have a_sub_one_ne_zero : a.val - 1 ≠ 0 := sub_ne_zero.mpr a.prop
+      exact div_self a_sub_one_ne_zero
+    rw [this]
+    ring
+\end{minted}
+Użyliśmy tutaj taktyki \Lean{field_simp}, która próbuje sprowadzić wyrażenia do wspólnego mianownika.
+
+Na koniec zostało pokazać przemienność $\star$.
+\begin{minted}{lean4}
+instance : CommGroup A where
+  mul_comm a b := by
+    apply Subtype.ext
+    change op a.val b.val = op b.val a.val
+    unfold op
+    ring
+\end{minted}
+
+Z tych wszystkich własności możemy wyprowadzić inne fakty, np. że $(A, \star)$ jest przemiennym monoidem z własnością skracania ($ac = bc \implies a = b$). Jest to oczywiste, ale o tyle ciekawe, że nie każdy monoid przemienny ma własność skracania (np. $(\NN, \cdot)$) i nie każdy monoid przemienny z własnością skracania jest grupą (np. $(\NN, +)$). W Leanie, takie instancje można \vocab{inferować} przy pomocy \Lean{infer_instance}.
+\begin{minted}{lean4}
+instance : CancelCommMonoid A := by
+  infer_instance
+\end{minted}
+Wbrew pozorom, nie będziemy z tego często korzystać, bo Lean automatycznie próbuje inferować instancje w momencie, kiedy jest to konieczne (np. przy aplikacji do twierdzenia).
+
+Warto wiedzieć, że zamiast budować dowód krok po kroku, można od razu stworzyć dużą deklarację \Lean{instance : CommGroup A}, w której należy udowodnić każdą konieczną własność.
+
+\subsection{Skończony pierścień całkowity}
+
+\begin{definition}[pierścień]
+    Niech $R$ będzie zbiorem niepustym oraz $+$ i $\cdot$ działaniami wewnętrznymi na $R$. Trójkę $(R, +, \cdot)$ nazwiemy pierścieniem, jeśli spełnione są następujące warunki:
+    \begin{itemize}[nosep]
+        \item $(R, +)$ jest grupą abelową,
+        \item $(R, \cdot)$ jest półgrupą,
+        \item dla dowolnych $a, b, c \in R$ zachodzą prawa rozdzielności:
+        \begin{align*}
+            a \cdot (b + c) = a \cdot b + a \cdot c, \\
+            (b + c) \cdot a = b \cdot a + c \cdot a.
+        \end{align*}
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[pierścień całkowity]
+    Pierścień $(R, +, \cdot)$ jest pierścieniem całkowitym, jeśli:
+    \begin{itemize}[nosep]
+        \item jest nietrywialny (ma co najmniej dwa różne elementy),
+        \item jest przemienny (działanie $\cdot$ jest przemienne),
+        \item ma jedynkę (istnieje element neutralny dla działania $\cdot$),
+        \item nie ma dzielników zera (jeśli $a, b \in R$ oraz $a \cdot b = 0$, to $a = 0$ lub $b = 0$).
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[ciało]
+    Pierścień $(R, +, \cdot)$ jest ciałem, jeśli:
+    \begin{itemize}[nosep]
+        \item jest nietrywialny (ma co najmniej dwa różne elementy),
+        \item jest przemienny (działanie $\cdot$ jest przemienne),
+        \item ma jedynkę (istnieje element neutralny dla działania $\cdot$),
+        \item każdy niezerowy element posiada element odwrotny.
+    \end{itemize}
+\end{definition}
+
+\begin{fact}
+    Dla każdego elementu $a$ pierścienia zachodzi $a \cdot 0 = 0$.
+\end{fact}
+\begin{proof}
+    \begin{align*}
+        a \cdot 0 &= a \cdot (0 + 0) \\
+        a \cdot 0 &= a \cdot 0 + a \cdot 0 \\
+        a \cdot 0 - a \cdot 0 &= a \cdot 0 + a \cdot 0 - a \cdot 0 \\
+        0 &= a \cdot 0 + 0 \\
+        0 &= a \cdot 0
+    \end{align*}
+\end{proof}
+
+\begin{fact}
+    Każde ciało jest pierścieniem całkowitym.
+\end{fact}
+\begin{proof}
+    Załóżmy przeciwnie, że istnieją dzielniki zera $x, y$. Wtedy
+    \begin{align*}
+        x \cdot y &= 0 \\
+        x^{-1} \cdot x \cdot y &= x^{-1} \cdot 0 \\
+        y &= x^{-1} \cdot 0 \\
+        y &= 0
+    \end{align*}
+    co jest sprzeczne z założeniem.
+\end{proof}
+
+Mniej oczywiste jest poniższe twierdzenie, które sformalizujemy w Leanie.
+
+\begin{theorem}
+    Każdy skończony pierścień całkowity jest ciałem.
+\end{theorem}
+\begin{proof}
+    Niech $(R, +, \cdot)$ będzie skończonym pierścieniem całkowitym.
+    Rozważmy funkcję $f : R \ni x \mapsto ax \in R$ dla dowolnie wybranego, niezerowego $a \in R$. Funkcja ta jest injekcją, ponieważ (skoro nie ma dzielników zera) z $ax_1 = ax_2$ wynika $x_1 = x_2$. Injekcja na zbiorze skończonym jest surjekcją, w szczególności istnieje $b \in R$ takie, że $f(b) = ab = 1$. Element $b$ jest wtedy elementem odwrotnym elementu $a$, więc $(R, +, \cdot)$ jest ciałem.
+\end{proof}
+
 
 \begin{thebibliography}{9}
     \bibitem{Barendregt2013} H. Barendregt, W. Dekkers, R. Statman, Lambda Calculus with Types, \textit{Perspectives in Logic}, Cambridge University Press, 2013.
