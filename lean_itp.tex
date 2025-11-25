@@ -997,23 +997,75 @@ Jeśli nie chcemy od razu udowadniać równości, a jedynie uprościć cel (np. 
 
 \section{Studia przypadków}
 
-\subsection{Przestrzeń metryczna}
+\subsection{Zbiór z relacją równoważności}
 
-\begin{definition}[przestrzeń pseudometryczna]
-    Niech $X$ będzie niepustym zbiorem, a $d : X \times X \to \RR$ funkcją, zwaną pseudometryką, spełniającą następujące warunki dla dowolnych $x, y, z \in X$:
+\begin{definition}[relacja równoważności]
+    Relację $\sim$ nazywamy relacją równoważności, jeśli spełnia następujące warunki dla dowolnych $a, b, c \in A$:
     \begin{itemize}[nosep]
-        \item $d(x, x) = 0$,
-        \item $d(x, y) = d(y, x)$,
-        \item $d(x, y) \leq d(x, z) + d(z, y)$.
+        \item $a \sim a$ (zwrotność),
+        \item jeśli $a \sim b$, to $b \sim a$ (symetryczność),
+        \item jeśli $a \sim b$ oraz $b \sim c$, to $a \sim c$ (przechodniość).
     \end{itemize}
-    Wówczas para $(X, d)$ jest przestrzenią pseudometryczną.
 \end{definition}
 
-\begin{definition}[przestrzeń metryczna]
-    Przestrzeń pseudometryczna $(X, d)$ jest przestrzenią metryczną, jeśli dodatkowo spełniony jest warunek:
-    \[ d(x, y) = 0 \iff x = y \]
-    dla dowolnych $x, y \in X$.
-\end{definition}
+W języku angielskim zbiór z relacją równoważności nazywa się \textit{setoid} i tej właśnie nazwy będziemy używać.
+Sformalizujemy w Leanie poniższe twierdzenie.
+
+\begin{theorem}
+    Setoidem jest para $(\ZZ^2, \approx)$, gdzie $(x_1, y_1) \approx (x_2, y_2)$ wtedy i tylko wtedy, gdy
+    \[ x_1 + y_1 = x_2 + y_2. \]
+\end{theorem}
+
+Zdefiniujemy teraz swoją pierwszą strukturę w Leanie.
+\begin{minted}{lean4}
+structure Point where
+  x : Int
+  y : Int
+\end{minted}
+Elementy struktury tworzymy za pomocą jednego z trzech sposobów:
+\begin{minted}{lean4}
+def p := (⟨0, 1⟩ : Point)   -- lub def p : Point := ...
+def q := Point.mk 1 0       -- lub def q : Point := ...
+def r : Point := { x := 1, y := 1 }
+\end{minted}
+
+W Leanie istnieją \vocab{klasy typów} (ang. \textit{type classes}), które są trochę jak interfejsy w Javie czy C\#, ale z pewnymi różnicami. Między innymi: można dodawać instację klasy typów do istniejącego typu bez jego modyfikacji, istnieją parametryzowane klasy typów, klasy typów mogą dziedziczyć po innych klasach typów, klasy typów mogą być instancjonowane automatycznie lub w wyniku dowodzenia.
+
+Udowodnienie, że para (\Lean{Point}, $\approx$) jest setoidem będzie polegało właśnie na zdefiniowaniu \vocab{instancji} klasy typów \Lean{Setoid} dla typu \Lean{Point}.
+
+\begin{minted}{lean4}
+instance : Setoid Point where
+  r a b := a.x + a.y = b.x + b.y
+  iseqv := by
+    constructor
+    · -- refl (zwrotność, reflexivity)
+      intro p
+      rfl
+    · -- symm (symetryczność, symmetry)
+      intro p q
+      intro h
+      rw [h]
+    · -- trans (przechodniość, transitivity)
+      intro p q r
+      intro h₁ h₂
+      rw [h₁, h₂]
+\end{minted}
+Pola \Lean{r} oraz \Lean{iseqv} odpowiadają odpowiednio relacji równoważności oraz dowodowi, że jest to relacja równoważności. Alternatywny, krótszy zapis dowodu pokazano poniżej.
+\begin{minted}{lean4}
+instance : Setoid Point where
+  r a b := a.x + a.y = b.x + b.y
+  iseqv := {
+    refl := by intro p; rfl
+    symm := by intro p q h; rw [h]
+    trans := by intro p q r h₁ h₂; rw [h₁, h₂]
+  }
+\end{minted}
+
+Teraz możemy używać relacji $\approx$ na elementach typu \Lean{Point} i korzystać z jej własności.
+\begin{minted}{lean4}
+example : p ≈ q := by
+  rfl
+\end{minted}
 
 \subsection{Grupa abelowa}
 
@@ -1045,7 +1097,7 @@ Jeśli nie chcemy od razu udowadniać równości, a jedynie uprościć cel (np. 
 Będziemy chcieli udowodnić, że pewna przykładowa struktura jest grupą abelową.
 
 \begin{theorem}
-    Udowodnij, że para $(A, \star)$ jest grupą abelową, gdzie $A = \QQ \setminus \{1\}$, a działanie $\star$ jest zdefiniowane jako
+    Grupą abelową jest para $(A, \star)$, gdzie $A = \QQ \setminus \{1\}$, a działanie $\star$ jest zdefiniowane jako
     \[ a \star b = ab - a - b + 2. \]
 \end{theorem}
 
@@ -1091,7 +1143,6 @@ lemma op_ne_one {a b : ℚ} (ha : a ≠ 1) (hb : b ≠ 1) : op a b ≠ 1 := by
 \end{minted}
 
 Mając powyższy lemat, możemy już stwierdzić, że $(A, \star)$ rzeczywiście jest magmą. W Leanie, magma multiplikatywna jest nazwana po prostu \Lean{Mul}, więc wystarczy zdeklarować instancję tej klasy typów dla naszego podtypu.
-\todo{Pojęcie klasy typów i instancji powinno być w poprzedniej sekcji.}
 \begin{minted}{lean4}
 instance : Mul A where
   mul a b := ⟨op a.val b.val, op_ne_one a.prop b.prop⟩
@@ -1112,7 +1163,7 @@ Musieliśmy użyć tutaj twierdzenia
 \centerLean{Subtype.ext {p : α → Prop} {a1 a2 : { x // p x }} : ↑a1 = ↑a2 → a1 = a2}
 oraz nowej taktyki, \Lean{change}, która pozwala nam zmienić cel na równoważny \emph{z definicji}.
 
-Teraz pokażemy, że $(A, \star)$ jest monoidem, czyli ma element neutralny. W tym celu należy powiedzieć, że typ $A$ ma jedynkę (równą $2$), a następnie, że ta jedynka istotnie jest elementem nautralnym, tzn. $2a = a \land a = 2a$. Nie trzeba pokazywać
+Teraz pokażemy, że $(A, \star)$ jest monoidem, czyli ma element neutralny. W tym celu należy powiedzieć, że typ $A$ ma jedynkę (równą $2$), a następnie, że ta jedynka istotnie jest elementem nautralnym, tzn. $2a = a \land a = 2a$.
 \begin{minted}{lean4}
 instance : One A where
   one := ⟨2, by decide⟩
