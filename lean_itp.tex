@@ -1114,14 +1114,14 @@ Po raz pierwszy spotykamy się z \vocab{podtypami} (ang. \textit{subtypes}), kt�
 \begin{minted}{lean4}
 #check (⟨0, by decide⟩ : A)
 \end{minted}
-Element podtypu jest automatycznie wyposażony w wiele przydatnych pól, w tym: wartość, twierdzenie o spełnianiu warunku, twierdzenia o równoważności równości na typach i równości na podtypach.
-\todo[inline]{występuje tutaj ↑, o którym nic nie pisałem}
+Element podtypu jest automatycznie wyposażony w wiele przydatnych pól, w tym wartość i twierdzenie o spełnianiu warunku. Warto zauważyć, że $a : \QQ = b : \QQ \iff a : A = b : A$. Takie twierdzenie też jest oczywiście dostępne.
 \begin{minted}{lean4}
 def a0 := (⟨0, by decide⟩ : A)
 #check a0.val     -- ↑a0 : ℚ
 #check a0.prop    -- ↑a0 ≠ 1
 #check a0.coe_inj -- ↑a = ↑b ↔ a = b
 \end{minted}
+Strzałka w górę oznacza tutaj koercję (rzutowanie) typu z podtypu na typ bazowy.
 
 Zdefiniujmy działanie $\star$, póki co na liczbach wymiernych.
 \begin{minted}{lean4}
@@ -1302,9 +1302,14 @@ Mniej oczywiste jest poniższe twierdzenie, które sformalizujemy w Leanie.
 
 
 \begin{thebibliography}{9}
-    \bibitem{Barendregt2013} H. Barendregt, W. Dekkers, R. Statman, Lambda Calculus with Types, \textit{Perspectives in Logic}, Cambridge University Press, 2013.
-    \bibitem{CsirmazGyenis} L. Csirmaz, Z. Gyenis, Mathematical Logic: Exercises and Solutions, \textit{Problem Books in Mathematics}, Springer, 2022.
-    \bibitem{SorensenUrzyczyn} M. H. Sørensen, P. Urzyczyn, Lectures on the Curry-Howard Isomorphism, \textit{Studies in Logic and the Foundations of Mathematics}, vol. 149, Elsevier, 2006.
+    \bibitem{mathinlean} J. Avigad, P. Massot. Mathematics in Lean, \url{https://leanprover-community.github.io/mathematics_in_lean/}.
+    \bibitem{theoremprovinginlean} J. Avigad, L. de Moura, S. Kong, S. Ullrich. Theorem Proving in Lean 4, \url{https://leanprover.github.io/theorem_proving_in_lean4/}.
+    \bibitem{Barendregt2013} H. Barendregt, W. Dekkers, R. Statman. Lambda Calculus with Types, \textit{Perspectives in Logic}, Cambridge University Press, 2013.
+    \bibitem{CsirmazGyenis2022} L. Csirmaz, Z. Gyenis. Mathematical Logic: Exercises and Solutions, \textit{Problem Books in Mathematics}, Springer, 2022.
+    \bibitem{Palmgren2009} E. Palmgren. Semantics of intuitionistic propositional logic: lecture notes for Applied Logic, 2009, \url{https://www2.math.uu.se/~palmgren/tillog/heyting3.pdf}.
+    \bibitem{SorensenUrzyczyn2006} M. H. Sørensen, P. Urzyczyn. Lectures on the Curry-Howard Isomorphism, \textit{Studies in Logic and the Foundations of Mathematics}, vol. 149, Elsevier, 2006.
+    \bibitem{Urzyczyn2025} P. Urzyczyn. Rachunek lambda: materiały do wykładu, 2025, \url{https://www.mimuw.edu.pl/~urzy/Lambda/erlambda.pdf}.
+    \bibitem{openlogic} R. Zach et. al, The Open Logic Text, \url{https://openlogicproject.org/}.
 \end{thebibliography}
 
 \end{document}
