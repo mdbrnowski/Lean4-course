@@ -964,6 +964,7 @@ example : ∃ n : Nat, n > 1000 := by
 
 Lean posiada wiele taktyk automatyzujących dowodzenie, z których najważniejsze omówimy w tej sekcji.
 
+\paragraph{Ring}
 Udowodnijmy, że dla każdych $a, b \in \NN$ zachodzi $(a + b)^2 = a^2 + 2ab + b^2$.
 
 \begin{minted}{lean4}
@@ -990,6 +991,65 @@ example {a b : Nat} : (a + b)^2 = a^2 + 2 * a * b + b^2 := by
 \end{minted}
 
 Jeśli nie chcemy od razu udowadniać równości, a jedynie uprościć cel (np. nierówność), zamiast \Lean{ring} możemy użyć taktyki \Lean{ring_nf} (od ang. \textit{normal form}).
+
+\paragraph{Simp}
+Lean posiada taktykę \Lean{simp}, która upraszcza cel (lub założenie) za pomocą zbioru predefiniowanych reguł. Na przykład
+\begin{minted}{lean4}
+example {n : Nat} : n ∣ 1 ↔ n = 1 := by
+  exact Nat.dvd_one
+\end{minted}
+możemy udowodnić też jako
+\begin{minted}{lean4}
+example {n : Nat} : n ∣ 1 ↔ n = 1 := by
+  simp
+\end{minted}
+ponieważ twierdzenie \Lean{Nat.dvd_one} jest poprzedzone atrybutem \Lean{@[simp]} przy swojej definicji, a więc tym samym dodanym do zbioru reguł używanych przez \Lean{simp}.
+\centerLean{@[simp] theorem Nat.dvd_one {n : Nat} : n ∣ 1 ↔ n = 1}
+Twierdzenia otagowane przez \Lean{@[simp]} powinny być w postaci $A = B$ lub $A \Leftrightarrow B$, wtedy Lean zastąpi każde wystąpienie $A$ przez $B$ (nie odwrotnie).
+Zarówno sam Lean, jak i Mathlib posiadają wiele takich twierdzeń. Możemy również sami je dodawać; należy jednak przy tym uważać -- takie twierdzenie powinno \emph{zawsze} upraszczać formułę, prowadząc ją do pewnego rodzaju postaci normalnej.
+
+Zamiast prostego \Lean{simp} możemy użyć dowolnego z jego wariantów:
+\begin{itemize}[nosep]
+    \item \Lean{simp [a, b]}, który używa lematów oznaczonych przez \Lean{@[simp]} oraz dodatkowo podanych \Lean{a} i \Lean{b},
+    \item \Lean{simp [←a]}, który używa lematów oznaczonych przez \Lean{@[simp]} oraz \Lean{a} w odwrotną stronę,
+    \item \Lean{simp [-a]}, który używa lematów oznaczonych przez \Lean{@[simp]} z wyjątkiem \Lean{a},
+    \item \Lean{simp [*]}, który używa lematów oznaczonych przez \Lean{@[simp]} oraz wszystkich dostępnych w lokalnym kontekście,
+    \item \Lean{simp at h}, który upraszcza założenie \Lean{h},
+    \item \Lean{simp only [a, b]}, który używa tylko podanych lematów \Lean{a} i \Lean{b}.
+\end{itemize}
+
+\begin{remark}
+    Ponieważ z każdą aktualizacją Leana i Mathliba zbiór reguł używanych przez \Lean{simp} może się zmieniać, nie powinno się używać \Lean{simp} w środku dowodu. Można używać go na końcu, ponieważ zakładamy, że \Lean{simp} nie zacznie działać \emph{gorzej}.
+
+    W środku dowodu można użyć \Lean{simp only [...]}. Jeśli nie wiemy, jakich dokładnie twierdzeń chcemy użyć, możemy użyć \Lean{simp?}, która podpowie nam, jakie reguły zostały użyte do uproszczenia formuły.
+\end{remark}
+
+\paragraph{Omega}
+Taktyka \Lean{omega} używa \vocab{testu omega} W. Pugha. Jest użyteczna do udowadniania nierówności liniowych z liczbami całkowitymi i naturalnymi.
+\begin{minted}{lean4}
+example {x y : Nat} : x ≤ y ∨ y ≤ x := by
+  omega
+
+example {x : Int} (h1 : 0 < x) (h2 : x < 1) : False := by
+  omega
+\end{minted}
+
+\paragraph{Linarith}
+Taktyka \Lean{linarith} również służy do udowadniania nierówności liniowych, ale raczej na liczbach rzeczywistych i wymiernych. Na liczbach naturalnych i całkowitych również działa, ale jest mniej skuteczna niż \Lean{omega}.
+\begin{minted}{lean4}
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
+
+example {x y : ℝ} (h : x < y) : x - 1 < y := by
+  linarith
+
+example (x y : ℝ)
+    (h1 : x < 4)
+    (h2 : y < 4)
+    (h3 : x + y > 10) :
+    False := by
+  linarith
+\end{minted}
 
 \subsection{Indukcja matematyczna}
 
