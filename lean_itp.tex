@@ -964,7 +964,7 @@ example : ∃ n : Nat, n > 1000 := by
 
 Lean posiada wiele taktyk automatyzujących dowodzenie, z których najważniejsze omówimy w tej sekcji.
 
-\paragraph{Ring}
+\paragraph{ring}
 Udowodnijmy, że dla każdych $a, b \in \NN$ zachodzi $(a + b)^2 = a^2 + 2ab + b^2$.
 
 \begin{minted}{lean4}
@@ -992,7 +992,7 @@ example {a b : Nat} : (a + b)^2 = a^2 + 2 * a * b + b^2 := by
 
 Jeśli nie chcemy od razu udowadniać równości, a jedynie uprościć cel (np. nierówność), zamiast \Lean{ring} możemy użyć taktyki \Lean{ring_nf} (od ang. \textit{normal form}).
 
-\paragraph{Simp}
+\paragraph{simp}
 Lean posiada taktykę \Lean{simp}, która upraszcza cel (lub założenie) za pomocą zbioru predefiniowanych reguł. Na przykład
 \begin{minted}{lean4}
 example {n : Nat} : n ∣ 1 ↔ n = 1 := by
@@ -1024,7 +1024,7 @@ Zamiast prostego \Lean{simp} możemy użyć dowolnego z jego wariantów:
     W środku dowodu można użyć \Lean{simp only [...]}. Jeśli nie wiemy, jakich dokładnie twierdzeń chcemy użyć, możemy użyć \Lean{simp?}, która podpowie nam, jakie reguły zostały użyte do uproszczenia formuły.
 \end{remark}
 
-\paragraph{Omega}
+\paragraph{omega}
 Taktyka \Lean{omega} używa \vocab{testu omega} W. Pugha. Jest użyteczna do udowadniania nierówności liniowych z liczbami całkowitymi i naturalnymi.
 \begin{minted}{lean4}
 example {x y : Nat} : x ≤ y ∨ y ≤ x := by
@@ -1034,7 +1034,7 @@ example {x : Int} (h1 : 0 < x) (h2 : x < 1) : False := by
   omega
 \end{minted}
 
-\paragraph{Linarith}
+\paragraph{linarith}
 Taktyka \Lean{linarith} również służy do udowadniania nierówności liniowych, ale raczej na liczbach rzeczywistych i wymiernych. Na liczbach naturalnych i całkowitych również działa, ale jest mniej skuteczna niż \Lean{omega}.
 \begin{minted}{lean4}
 import Mathlib.Data.Real.Basic
@@ -1043,12 +1043,18 @@ import Mathlib.Tactic.Linarith
 example {x y : ℝ} (h : x < y) : x - 1 < y := by
   linarith
 
-example (x y : ℝ)
-    (h1 : x < 4)
-    (h2 : y < 4)
-    (h3 : x + y > 10) :
-    False := by
+example {x y : ℝ} (h₁ : x < 4) (h₂ : y < 4) : x + y ≤ 10 := by
   linarith
+\end{minted}
+
+\paragraph{nlinarith}
+Taktyka \Lean{nlinarith} działa tak jak \Lean{linarith}, ale potrafi też rozwiązać niektóre nieliniowe problemy arytmetyczne.
+\begin{minted}{lean4}
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
+
+example {x : ℝ} (h₁ : x < 4) (h₂ : x > 0) : x ^ 2 < 16 := by
+  nlinarith
 \end{minted}
 
 \subsection{Indukcja matematyczna}
@@ -1287,6 +1293,11 @@ instance : CancelCommMonoid A := by
 Wbrew pozorom, nie będziemy z tego często korzystać, bo Lean automatycznie próbuje inferować instancje w momencie, kiedy jest to konieczne (np. przy aplikacji do twierdzenia).
 
 Warto wiedzieć, że zamiast budować dowód krok po kroku, można od razu stworzyć dużą deklarację \Lean{instance : CommGroup A}, w której należy udowodnić każdą konieczną własność.
+
+\begin{problem}
+    Zrobić trzeci zestaw zadań:
+    \inputminted{lean4}{problemsets/problemset03.lean}
+\end{problem}
 
 \subsection{Skończony pierścień całkowity}
 
