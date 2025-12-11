@@ -1229,7 +1229,7 @@ Musieliśmy użyć tutaj twierdzenia
 \centerLean{Subtype.ext {p : α → Prop} {a1 a2 : { x // p x }} : ↑a1 = ↑a2 → a1 = a2}
 oraz nowej taktyki, \Lean{change}, która pozwala nam zmienić cel na równoważny \emph{z definicji}.
 
-Teraz pokażemy, że $(A, \star)$ jest monoidem, czyli ma element neutralny. W tym celu należy powiedzieć, że typ $A$ ma jedynkę (równą $2$), a następnie, że ta jedynka istotnie jest elementem nautralnym, tzn. $2a = a \land a = 2a$.
+Teraz pokażemy, że $(A, \star)$ jest monoidem, czyli ma element neutralny. W tym celu należy powiedzieć, że typ $A$ ma jedynkę (równą $2$), a następnie, że ta jedynka istotnie jest elementem nautralnym, tzn. $2 \star a = a \star 2 = a$ dla każdego $a \in A$.
 \begin{minted}{lean4}
 instance : One A where
   one := ⟨2, by decide⟩
