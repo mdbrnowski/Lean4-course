@@ -19,6 +19,20 @@
 \newcommand{\Lean}[1]{\mintinline[fontsize=\normalsize]{lean4}{#1}}
 \newcommand{\centerLean}[2][]{\begin{center}\Lean{#2}#1\end{center}}
 
+\mdfdefinestyle{mdgoalbox}{
+    style=mdremarkbox, % inherit from remark
+    linecolor=MainColor,
+    backgroundcolor=MainColor!5,
+}
+\declaretheoremstyle[
+    headfont=\sffamily\bfseries,
+    bodyfont=\normalfont\small,
+    mdframed={style=mdgoalbox},
+    headpunct={\\[3pt]},
+    postheadspace={0pt}
+]{goalbox}
+\declaretheorem[style=goalbox,name=Cele,numbered=no]{lesson-goals}
+
 \begin{document}
 \maketitle
 \tableofcontents
@@ -1057,13 +1071,13 @@ example {x : ℝ} (h₁ : x < 4) (h₂ : x > 0) : x ^ 2 < 16 := by
   nlinarith
 \end{minted}
 
-\subsection{Indukcja matematyczna}
-
-\todo[inline]{zrobić}
-
 \section{Studia przypadków}
 
 \subsection{Zbiór z relacją równoważności}
+
+\begin{lesson-goals}[czego się nauczymy?]
+    Struktury, klasy typów, instancje.
+\end{lesson-goals}
 
 \begin{definition}[relacja równoważności]
     Relację $\sim$ nazywamy relacją równoważności, jeśli spełnia następujące warunki dla dowolnych $a, b, c \in A$:
@@ -1134,6 +1148,10 @@ example : p ≈ q := by
 \end{minted}
 
 \subsection{Grupa abelowa}
+
+\begin{lesson-goals}[czego się nauczymy?]
+  Typy zależne, koercja typów, inferencja klasy typów, taktyki \Lean{change}, \Lean{unfold}, \Lean{field_simp}, \Lean{infer_instance}.
+\end{lesson-goals}
 
 \begin{definition}[magma]
     Niech $R$ będzie zbiorem niepustym oraz $\cdot : R \times R \to R$ działaniem wewnętrznym na $R$. Parę $(R, \cdot)$ nazywamy wtedy magmą lub grupoidem.
@@ -1207,6 +1225,8 @@ lemma op_ne_one {a b : ℚ} (ha : a ≠ 1) (hb : b ≠ 1) : op a b ≠ 1 := by
   · have : b = 1 := by linarith
     contradiction
 \end{minted}
+
+Użyliśmy tutaj taktyki \Lean{unfold}, która \emph{rozwija} definicję \Lean{op} w danym miejscu.
 
 Mając powyższy lemat, możemy już stwierdzić, że $(A, \star)$ rzeczywiście jest magmą. W Leanie, magma multiplikatywna jest nazwana po prostu \Lean{Mul}, więc wystarczy zdeklarować instancję tej klasy typów dla naszego podtypu.
 \begin{minted}{lean4}
