@@ -1073,6 +1073,9 @@ example {x : ℝ} (h₁ : x < 4) (h₂ : x > 0) : x ^ 2 < 16 := by
 
 \section{Studia przypadków}
 
+W ten sekcji zajmiemy wykazaniem kilku ciekawych faktów matematycznych.
+Każdy z tych przykładów będzie okazją do zaznajomienia się z pewnym fragmentem Mathliba oraz poznania nowych konstrukcji składniowych i taktyk Leana.
+
 \subsection{Zbiór z relacją równoważności}
 
 \begin{lesson-goals}[czego się nauczymy?]
@@ -1318,6 +1321,173 @@ Warto wiedzieć, że zamiast budować dowód krok po kroku, można od razu stwor
     Zrobić trzeci zestaw zadań:
     \inputminted{lean4}{problemsets/problemset03.lean}
 \end{problem}
+
+\subsection{Równanie funkcyjne}
+
+\begin{lesson-goals}[czego się nauczymy?]
+    Słowo kluczowe \Lean{obtain}, taktyki \Lean{specialize}, \Lean{funext}, \Lean{refine}.
+\end{lesson-goals}
+
+Zajmiemy się teraz pewnym zadaniem, które pojawiło się na shortliście Międzynarodowej Olimpiady Matematycznej w 2013 roku (\href{https://www.imo-official.org/problems/IMO2013SL.pdf#page=7}{zadanie N1}). Oryginalnie należało znaleźć wszystkie rozwiązania równania funkcyjnego, ale my ograniczymy się do pokazania, że podane rozwiązanie jest jedynym możliwym.
+
+\begin{theorem}
+    Funkcja $f(x) = x$ jest jedyną funkcją $f : \NN_+ \to \NN_+$ spełniającą
+    \[ m^2 + f(n) \mid mf(m) + n \]
+    dla wszystkich $m, n \in \NN_+$.
+\end{theorem}
+Jako że dowód może być trudniejszy, niż w poprzednich przykładach, najpierw przedstawimy go w języku naturalnym.
+\begin{proof}
+    Łatwo sprawdzić, że $f(x) = x$ spełnia warunek zadania. Pokażemy teraz, że jest to jedyne rozwiązanie.
+
+    Podstawmy $m = n = 2$. Otrzymujemy
+    \[ 4 + f(2) \mid 2f(2) + 2. \]
+    Z tego wynika, że istnieje $k \in \NN_+$ takie, że
+    \begin{align*}
+        k(4 + f(2)) &= 2f(2) + 2 \\
+        4k + kf(2) &= 2f(2) + 2 \\
+        (k - 2)f(2) &= 2 - 4k \\
+        f(2) &= \frac{2 - 4k}{k - 2},
+    \end{align*}
+    z czego wynika $k = 1$, więc dostajemy $f(2) = 2$.
+
+    Teraz podstawmy $m = 2$. Otrzymujemy
+    \begin{align*}
+        4 + f(n) &\mid 2f(2) + n \\
+        4 + f(n) &\mid 4 + n,
+    \end{align*}
+    więc $f(n) \leq n$.
+
+    Na koniec podstawmy $m = n$. Otrzymujemy
+    \begin{align*}
+        n^2 + f(n) &\mid nf(n) + n \\
+        n^2 + f(n) &\leq nf(n) + n \\
+        n(n - 1) &\leq f(n)(n - 1).
+    \end{align*}
+    Jeśli $n = 1$, to oczywiście $f(1) = 1$. Jeśli $n \neq 1$, to możemy podzielić przez $n - 1$ i otrzymujemy $n \leq f(n)$. Ostatecznie mamy $f(n) = n$ dla każdego $n \in \NN_+$.
+\end{proof}
+
+Sformalizowane twierdzenie wygląda następująco.
+\begin{minted}{lean4}
+import Mathlib.Data.PNat.Basic
+
+example {f : ℕ+ → ℕ+} : (∀ m n : ℕ+, m * m + f n ∣ m * f m + n) ↔ f = id := sorry
+\end{minted}
+Funkcja \Lean{id} to funkcja identycznościowa, to znaczy $\opname{id}(x) = x$ dla każdego $x$.
+
+Chcemy pokazać równoważność, więc musimy udowodnić oba kierunki. Możemy więc użyć taktyki \Lean{constructor}, która tworzy dwa cele do udowodnienia (z czego jeden będzie bardzo prosty).
+\begin{minted}{lean4}
+example {f : ℕ+ → ℕ+} : (∀ m n : ℕ+, m * m + f n ∣ m * f m + n) ↔ f = id := by
+  constructor
+  · intro h
+    sorry -- dowód trudniejszego kierunku
+  · intro h
+    simp [h]
+\end{minted}
+
+Zacznijmy od pokazania, że $f(2) = 2$. Aby to zrobić, należy podstawić $m = n = 2$, które można oczywiście zrealizować za pomocą \Lean{have} oraz aplikacji, ale my użyjemy taktyki \Lean{specialize}.
+\begin{minted}{lean4}
+have f2_eq_2 : f 2 = 2 := by
+  -- h : ∀ (m n : ℕ+), m * m + f n ∣ m * f m + n
+  specialize h 2 2
+  -- h : 2 * 2 + f 2 ∣ 2 * f 2 + 2
+  sorry
+\end{minted}
+
+Teraz musimy skorzystać z faktu, że $a \mid b$ wtedy i tylko wtedy, gdy istnieje $c$ takie, że $b = ca$. W Leanie takie twierdzenie jest dostępne jako \href{https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Divisibility/Basic.html#exists_eq_mul_left_of_dvd}{\Lean{exists_eq_mul_left_of_dvd}}.
+Czytelnik powinien zwrócić uwagę na jego dokładne sformuowanie -- korzystamy z faktu, że $(\NN_+, \cdot)$ jest półgrupą przemienną.
+\begin{minted}{lean4}
+have f2_eq_2 : f 2 = 2 := by
+  specialize h 2 2
+  have := exists_eq_mul_left_of_dvd h
+  -- this : ∃ c, 2 * f 2 + 2 = c * (2 * 2 + f 2)
+  sorry
+\end{minted}
+Z założeniem, które zawiera kwantyfikator egzystencjalny, dosyć niewygodnie jest pracować. Wolelibyśmy mieć bezpośrednio zmienną i założenie o niej. Oby to osiągnąć, wystarczy zamienić \Lean{have} na \Lean{obtain}.
+\begin{minted}{lean4}
+have f2_eq_2 : f 2 = 2 := by
+  specialize h 2 2
+  obtain ⟨k, hk⟩ := exists_eq_mul_left_of_dvd h
+  -- k : ℕ+
+  -- hk : 2 * f 2 + 2 = k * (2 * 2 + f 2)
+  sorry
+\end{minted}
+
+Teraz możemy już pokazać, że $k = 1$. Z takim celem powinna poradzić sobie już taktyka \Lean{nlinarith}, ale, jak Czytelnik raczy sprawdzić, sobie nie radzi\footnote{Przynajmniej w wersji Lean v26.0.0, w przyszłości może się to zmienić.}. Problemem jest to, że pracujemy na podtypie typu \Lean{ℕ}, a nie na samym \Lean{ℕ}. Zmieńmy to za pomocą \Lean{PNat.dvd_iff} oraz \Lean{PNat.eq}, kończąc tę część dowodu.
+\begin{minted}{lean4}
+import Mathlib.Data.PNat.Basic
+import Mathlib.Tactic.Linarith
+
+example {f : ℕ+ → ℕ+} : (∀ m n : ℕ+, m * m + f n ∣ m * f m + n) ↔ f = id := by
+  constructor
+  · intro h
+    have f2_eq_2 : f 2 = 2 := by
+      specialize h 2 2
+      obtain ⟨k, hk⟩ := exists_eq_mul_left_of_dvd (PNat.dvd_iff.mp h)
+      have k_eq_1 : k = 1 := by
+        nlinarith
+      apply PNat.eq
+      nlinarith
+    sorry -- ⊢ f = id
+  · intro h
+    simp [h]
+\end{minted}
+
+Aktualny cel to $f = \opname{id}$. Wolelibyśmy pracować z celem postaci $f(x) = x$ dla każdego $x$. Aby wykonać takie przejście, możemy użyć taktyki \Lean{funext}, która zamienia równość funkcji na równość wartości funkcji dla dowolnego argumentu oraz twierdzenia \Lean{id_eq}, które upraszcza $\opname{id}(x)$ do $x$.
+\begin{minted}{lean4}
+have f2_eq_2 : f 2 = 2 := sorry -- ...
+funext x
+-- x : ℕ+
+-- ⊢ f x = id x
+rw [id_eq]
+-- x : ℕ+
+-- ⊢ f x = x
+sorry
+\end{minted}
+
+Teraz moglibyśmy kolejno udowodnić, że $f(x) \leq x$ oraz $f(x) \geq x$, następnie użyć \Lean{le_antisymm} ($f(x) \leq x \land f(x) \geq x \implies f(x) = x$), ale możemy od razu zasygnalizować do czego dążymy za pomocą \Lean{refine}, a Lean sam wygeneruje cele do udowodnienia.
+\begin{minted}{lean4}
+intro h
+have f2_eq_2 : f 2 = 2 := sorry -- ...
+funext x
+rw [id_eq]
+refine le_antisymm ?_ ?_
+· -- ⊢ f x ≤ x
+  sorry
+· -- ⊢ x ≤ f x
+  sorry
+\end{minted}
+
+Reszta dowodu jest już raczej prosta -- Czytelnik powinien spróbować go ukończyć samodzielnie (korzystając z twierdzenia \Lean{PNat.le_of_dvd} i taktyki \Lean{change} kiedy będzie to potrzebne). Cały dowód znajduje się poniżej.
+\begin{minted}{lean4}
+import Mathlib.Data.PNat.Basic
+import Mathlib.Tactic.Linarith
+
+example {f : ℕ+ → ℕ+} : (∀ m n : ℕ+, m * m + f n ∣ m * f m + n) ↔ f = id := by
+  constructor
+  · intro h
+    have f2_eq_2 : f 2 = 2 := by
+      specialize h 2 2
+      obtain ⟨k, hk⟩ := exists_eq_mul_left_of_dvd (PNat.dvd_iff.mp h)
+      have k_eq_1 : k = 1 := by
+        nlinarith
+      apply PNat.eq
+      nlinarith
+    funext x
+    rw [id_eq]
+    refine le_antisymm ?_ ?_
+    · specialize h 2 x
+      rw [f2_eq_2] at h
+      have := PNat.le_of_dvd h
+      simp at this
+      assumption
+    · specialize h x x
+      have := PNat.le_of_dvd h
+      change (x * x + f x : ℕ) ≤ x * f x + x at this
+      change (x : ℕ) ≤ f x
+      nlinarith [PNat.pos x, PNat.pos (f x)]
+  · intro h
+    simp [h]
+\end{minted}
 
 \subsection{Skończony pierścień całkowity}
 
