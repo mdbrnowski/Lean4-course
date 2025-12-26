@@ -1,0 +1,5 @@
+.vscode/
+
+# LaTeX
+build/
+*.synctex.gz
