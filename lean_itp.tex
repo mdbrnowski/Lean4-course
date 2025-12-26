@@ -1325,7 +1325,7 @@ Warto wiedzieć, że zamiast budować dowód krok po kroku, można od razu stwor
 \subsection{Równanie funkcyjne}
 
 \begin{lesson-goals}[czego się nauczymy?]
-    Słowo kluczowe \Lean{obtain}, taktyki \Lean{specialize}, \Lean{funext}, \Lean{refine}.
+    Słowo kluczowe \Lean{obtain}, taktyki \Lean{specialize}, \Lean{funext}, \Lean{refine}, \Lean{simpa}.
 \end{lesson-goals}
 
 Zajmiemy się teraz pewnym zadaniem, które pojawiło się na shortliście Międzynarodowej Olimpiady Matematycznej w 2013 roku (\href{https://www.imo-official.org/problems/IMO2013SL.pdf#page=7}{zadanie N1}). Oryginalnie należało znaleźć wszystkie rozwiązania równania funkcyjnego, ale my ograniczymy się do pokazania, że podane rozwiązanie jest jedynym możliwym.
@@ -1458,36 +1458,8 @@ refine le_antisymm ?_ ?_
 \end{minted}
 
 Reszta dowodu jest już raczej prosta -- Czytelnik powinien spróbować go ukończyć samodzielnie (korzystając z twierdzenia \Lean{PNat.le_of_dvd} i taktyki \Lean{change} kiedy będzie to potrzebne). Cały dowód znajduje się poniżej.
-\begin{minted}{lean4}
-import Mathlib.Data.PNat.Basic
-import Mathlib.Tactic.Linarith
-
-example {f : ℕ+ → ℕ+} : (∀ m n : ℕ+, m * m + f n ∣ m * f m + n) ↔ f = id := by
-  constructor
-  · intro h
-    have f2_eq_2 : f 2 = 2 := by
-      specialize h 2 2
-      obtain ⟨k, hk⟩ := exists_eq_mul_left_of_dvd (PNat.dvd_iff.mp h)
-      have k_eq_1 : k = 1 := by
-        nlinarith
-      apply PNat.eq
-      nlinarith
-    funext x
-    rw [id_eq]
-    refine le_antisymm ?_ ?_
-    · specialize h 2 x
-      rw [f2_eq_2] at h
-      have := PNat.le_of_dvd h
-      simp at this
-      assumption
-    · specialize h x x
-      have := PNat.le_of_dvd h
-      change (x * x + f x : ℕ) ≤ x * f x + x at this
-      change (x : ℕ) ≤ f x
-      nlinarith [PNat.pos x, PNat.pos (f x)]
-  · intro h
-    simp [h]
-\end{minted}
+\inputminted{lean4}{case_studies/FunctionalEquation.lean}
+Taktyka \Lean{simpa} to połączenie \Lean{simp} oraz \Lean{assumption}, które domyślnie działa z hipotezą \Lean{this}. Zamiast \Lean{simpa} moglibyśmy więc napisać \Lean{simpa using this} albo \Lean{simp at this} i \Lean{assumption}.
 
 \subsection{Skończony pierścień całkowity}
 

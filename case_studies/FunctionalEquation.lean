@@ -1,7 +1,6 @@
 import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.Linarith
 
-
 example {f : ℕ+ → ℕ+} : (∀ m n : ℕ+, m * m + f n ∣ m * f m + n) ↔ f = id := by
   constructor
   · intro h
@@ -18,8 +17,7 @@ example {f : ℕ+ → ℕ+} : (∀ m n : ℕ+, m * m + f n ∣ m * f m + n) ↔ 
     · specialize h 2 x
       rw [f2_eq_2] at h
       have := PNat.le_of_dvd h
-      simp at this
-      assumption
+      simpa
     · specialize h x x
       have := PNat.le_of_dvd h
       change (x * x + f x : ℕ) ≤ x * f x + x at this
