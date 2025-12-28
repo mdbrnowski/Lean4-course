@@ -1461,6 +1461,22 @@ Reszta dowodu jest już raczej prosta -- Czytelnik powinien spróbować go ukoń
 \inputminted{lean4}{case_studies/FunctionalEquation.lean}
 Taktyka \Lean{simpa} to połączenie \Lean{simp} oraz \Lean{assumption}, które domyślnie działa z hipotezą \Lean{this}. Zamiast \Lean{simpa} moglibyśmy więc napisać \Lean{simpa using this} albo \Lean{simp at this} i \Lean{assumption}.
 
+\subsection{Kongruencja modulo}
+
+\begin{lesson-goals}[czego się nauczymy?]
+    TODO
+\end{lesson-goals}
+
+W tej sekcji będziemy chcieli udowodnić proste twierdzenie dotyczące kongruencji modulo 9. Zanim jednak do tego przejdziemy, musimy się dowiedzieć, jak w Leanie są zdefiniowane liczby naturalne.
+
+Typ induktywny to typ definiowany przez podanie jego konstruktorów. Dotychczas stworzyliśmy jeden typ, \Lean{Point}, który miał dokładnie jeden konstruktor, domyślnie nazwany \Lean{Point.mk}. Korzystaliśmy już jednak z typów induktywnych z wieloma konstruktorami, np. \Lean{Or} z dwoma konstruktorami: \Lean{Or.inl} oraz \Lean{Or.inr}. Również \Lean{Nat} jest typem induktywnym, który, zgodnie z aksjomatyką Peano, ma dwa konstruktory: \Lean{Nat.zero} (liczba $0$) oraz \Lean{Nat.succ} (następnik liczby naturalnej).
+\begin{minted}{lean4}
+inductive Nat where
+  | zero : Nat
+  | succ (n : Nat) : Nat
+\end{minted}
+Składnia \Lean{structure} (której użyliśmy do zdefiniowania \Lean{Point}) jest w rzeczywistości skróconą formą powyższej składni \Lean{inductive}.
+
 \subsection{Skończony pierścień całkowity}
 
 \begin{definition}[pierścień]
