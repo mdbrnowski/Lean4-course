@@ -1559,14 +1559,14 @@ example {n : ℕ} : 4^n ≡ 1 + 3*n [MOD 9] := by
     calc
       _ = 4 * 4^n := by ring
       _ ≡ 4 * (1 + 3*n) [MOD 9] := by
-          apply Nat.ModEq.mul_left
-          exact ih
+        apply Nat.ModEq.mul_left
+        exact ih
       _ = 4 + 12*n := by ring
       _ = 4 + 3*n + 9*n := by ring
       _ ≡ 4 + 3*n + 0*n [MOD 9] := by
-          apply Nat.ModEq.add_left
-          apply Nat.ModEq.mul_right
-          rfl
+        apply Nat.ModEq.add_left
+        apply Nat.ModEq.mul_right
+        rfl
       _ = 1 + 3*(n + 1) := by ring
 \end{minted}
 
@@ -1593,6 +1593,7 @@ Wstęp teoretyczny do zadania 1 znajduje się w dodatku \ref{ssec:finite-integra
 
 \appendix
 \section{Dodatek}
+
 \subsection{Pierścienie całkowite i ciała}
 \label{ssec:finite-integral-domain}
 
@@ -1644,22 +1645,6 @@ W tej sekcji przedstawimy bardzo krótki wstęp teoretyczny dotyczący pierście
     \end{align*}
 \end{proof}
 
-\begin{fact}
-    Każde ciało jest pierścieniem całkowitym.
-\end{fact}
-\begin{proof}
-    Załóżmy przeciwnie, że istnieją dzielniki zera $x, y$. Wtedy
-    \begin{align*}
-        x \cdot y &= 0 \\
-        x^{-1} \cdot x \cdot y &= x^{-1} \cdot 0 \\
-        y &= x^{-1} \cdot 0 \\
-        y &= 0
-    \end{align*}
-    co jest sprzeczne z założeniem.
-\end{proof}
-
-Mniej oczywiste jest poniższe twierdzenie, które sformalizujemy w Leanie.
-
 \begin{theorem}
     Każdy skończony pierścień całkowity jest ciałem.
 \end{theorem}
@@ -1670,5 +1655,20 @@ Mniej oczywiste jest poniższe twierdzenie, które sformalizujemy w Leanie.
 
 Skończony pierścień całkowity można w Leanie opisać jako taki typ \Lean{R}, który spełnia \Lean{[CommRing R]}, \Lean{[IsDomain R]} i \Lean{[Finite R]}.
 Klasa typów \Lean{CommRing} opisuje przemienny pierścień z jedynką\footnote{Pierścienie i półpierścienie w Leanie domyślnie mają jedynkę. Istnieją natomiast ich odpowiedniki bez jedynki, nazwane \texttt{NonUnitalRing} i \texttt{NonUnitalSemiring}.}, a \Lean{IsDomain} to własność półpierścienia z jedynką (\Lean{Semiring}), która oznacza nietrywialność i brak dzielników zera. Pierścień całkowity to więc po prostu \Lean{CommRing} z własnością \Lean{IsDomain}, a skończony pierścień całkowity to \Lean{CommRing} z własnościami \Lean{IsDomain} i \Lean{Finite}.
+
+\subsection{Dalsza lektura}
+
+Jest kilka rzeczy, których w ramach tego kursu nie udało się omówić, a które mogą przydać się przy pierwszej okazji podczas samodzielnej pracy z Leanem. Lista (z pewnością niepełna) takich zagadnień znajduje się poniżej:
+\begin{itemize}
+    \item taktyka \Lean{nth_rw},
+    \item taktyka \Lean{by_cases},
+    \item taktyka \Lean{congr},
+    \item taktyka \Lean{contrapose!},
+    \item silna indukcja (\Lean{induction n using Nat.strongRecOn}),
+    \item (magiczne) taktyki \Lean{grind} i \Lean{aesop},
+    \item \Lean{structure} ... \Lean{deriving} ...,
+    \item komenda \Lean{print axioms} (raczej w ramach ciekawostki).
+\end{itemize}
+
 
 \end{document}
