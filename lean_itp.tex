@@ -129,7 +129,7 @@ Zamiast $\Gamma \cup \{B\}$ będziemy często pisać $\Gamma, B$.
     \caption{Reguły wnioskowania w intuicjonistycznym rachunku zdań (IRZ).}
 \end{figure}
 
-Oprócz tego, definiujemy negację jako $\neg A \coloneqq A \to \bot$. Dzięki tej definicji oraz regule ($\to\!$~E) możemy wywieść
+Oprócz tego definiujemy negację jako $\neg A \coloneqq A \to \bot$. Dzięki tej definicji oraz regule ($\to\!$~E) możemy wywieść
 \[
 \begin{prooftree}
     \hypo{\Gamma\vdash A}
@@ -497,7 +497,7 @@ Twierdzenie odwrotne również jest prawdziwe. Funkcje częściowo rekurencyjne 
 
 \subsection{Typowany rachunek lambda}
 
-Do rachunku lambda będziemy chcieli dodać typy w następujący sposob. Każdy term rachunku lambda będzie miał przypisany pewien typ, co będziemy zapisywać jako $M : \tau$, gdzie $M$ jest termem, a $\tau$ jest typem. Niech $\symbb{A}$ będzie zbiorem \vocab{typów atomowych}. Zbiór wszystkich typów $\symbb{T}$ definiujemy rekurencyjnie:
+Do rachunku lambda będziemy chcieli dodać typy w następujący sposób. Każdy term rachunku lambda będzie miał przypisany pewien typ, co będziemy zapisywać jako $M : \tau$, gdzie $M$ jest termem, a $\tau$ jest typem. Niech $\symbb{A}$ będzie zbiorem \vocab{typów atomowych}. Zbiór wszystkich typów $\symbb{T}$ definiujemy rekurencyjnie:
 \begin{align*}
     \alpha &\in \symbb{A} \implies \alpha \in \symbb{T}, \\
     \sigma, \tau &\in \symbb{T} \implies (\sigma \to \tau) \in \symbb{T},
@@ -603,7 +603,7 @@ theorem pow_comm (a b : Nat) : a ^ b = b ^ a :=
 Oczywiście, taka teza może być fałszywa (jak powyżej).
 
 \begin{remark}[Plausible]
-    Istnieje paczka Leana o nazwie \textbf{Plausible}, która pomaga w szybkim szukaniu kontrprzykładów do hipotez. Jej działania opiera sie po prostu na losowym próbkowaniu argumentów i sprawdzaniu, czy teza zachodzi. Jeśli nie, to zwraca znaleziony kontrprzykład (przez informację diagnostyczną błędu kompilacji).
+    Istnieje paczka Leana o nazwie \textbf{Plausible}, która pomaga w szybkim szukaniu kontrprzykładów do hipotez. Jej działania opiera się po prostu na losowym próbkowaniu argumentów i sprawdzaniu, czy teza zachodzi. Jeśli nie, to zwraca znaleziony kontrprzykład (przez informację diagnostyczną błędu kompilacji).
     \begin{minted}{lean4}
 import Plausible
 
@@ -649,7 +649,7 @@ Czasami, zamiast dowodzić twierdzeń, będziemy chcieli po prostu obliczyć war
 \end{minted}
 
 \subparagraph{Operatory potoku i odwróconego potoku}
-Jak na porządny język programowania przystało, Lean posiada operatory umożliwiające kontrolę kolejności ewaluacji wyrażeń. Operatory \texttt{<|} i \texttt{|>} zachowują się tak samo jak w F\# czy Elm, sam operator \texttt{|>} znajdziemy również w Elixirze czy OCaml-u.
+Jak na porządny język programowania przystało, Lean posiada operatory umożliwiające kontrolę kolejności ewaluacji wyrażeń. Operatory \texttt{<|} i \texttt{|>} zachowują się tak samo jak w F\# czy Elm, sam operator \texttt{|>} znajdziemy również w Elixirze czy OCamlu.
 W Haskellu odpowiadają one odpowiednio operatorom \texttt{\$} i \texttt{\&}. Przykłady użycia:
 \begin{minted}{lean4}
 #eval Nat.add 1 (Nat.mul 2 3)   -- 7
@@ -698,7 +698,7 @@ Teraz możemy użyć tego twierdzenia jako
 #check tw one_lt_two two_lt_three
 \end{minted}
 
-Oprócz argumentów \textit{explicit} i \textit{implicit}, Lean pozwala na definiowanie argumentów \textit{instance implicit} oraz \textit{strict implicit}, oznaczanych odpowiednio przez $[\ldots]$ oraz $⦃\ldots⦄$. Zajmiemy się nimi później.
+Oprócz argumentów \textit{explicit} i \textit{implicit} Lean pozwala na definiowanie argumentów \textit{instance implicit} oraz \textit{strict implicit}, oznaczanych odpowiednio przez $[\ldots]$ oraz $⦃\ldots⦄$. Zajmiemy się nimi później.
 
 \subsubsection{Typy Sort, Type i Prop}
 
@@ -810,7 +810,7 @@ example {P Q : Prop} (h : P) : P ∨ Q := by
 \end{minted}
 
 \begin{remark}
-    Bardziej dokładnie, taktyka \Lean{constructor} używa pierwszego pasującego konstruktora struktury, a taktyki \Lean{left} i \Lean{right} używają odpowiednio pierwszego i drugiego konstruktora struktury, która ma dokładnie dwa konstruktory. Nie są one przypisane do struktur \Lean{And} i \Lean{Or}. W szczególności, zamiast \Lean{left} zawsze można używać \Lean{constructor}, ale sensowność takiego działania pozostawiamy do oceny Czytelnikowi.
+    Dokładniej, taktyka \Lean{constructor} używa pierwszego pasującego konstruktora struktury, a taktyki \Lean{left} i \Lean{right} używają odpowiednio pierwszego i drugiego konstruktora struktury, która ma dokładnie dwa konstruktory. Nie są one przypisane do struktur \Lean{And} i \Lean{Or}. W szczególności, zamiast \Lean{left} zawsze można używać \Lean{constructor}, ale sensowność takiego działania pozostawiamy do oceny Czytelnikowi.
 \end{remark}
 
 \subparagraph{Negacja}
@@ -1112,7 +1112,7 @@ def q := Point.mk 1 0       -- lub def q : Point := ...
 def r : Point := { x := 1, y := 1 }
 \end{minted}
 
-W Leanie istnieją \vocab{klasy typów} (ang. \textit{type classes}), które są trochę jak interfejsy w Javie czy C\#, ale z pewnymi różnicami. Między innymi: można dodawać instację klasy typów do istniejącego typu bez jego modyfikacji, istnieją parametryzowane klasy typów, klasy typów mogą dziedziczyć po innych klasach typów, klasy typów mogą być instancjonowane automatycznie lub w wyniku dowodzenia.
+W Leanie istnieją \vocab{klasy typów} (ang. \textit{type classes}), które są trochę jak interfejsy w Javie czy C\#, ale z pewnymi różnicami. Między innymi: można dodawać instancję klasy typów do istniejącego typu bez jego modyfikacji, istnieją parametryzowane klasy typów, klasy typów mogą dziedziczyć po innych klasach typów, klasy typów mogą być instancjonowane automatycznie lub w wyniku dowodzenia.
 
 Udowodnienie, że para (\Lean{Point}, $\approx$) jest setoidem będzie polegało właśnie na zdefiniowaniu \vocab{instancji} klasy typów \Lean{Setoid} dla typu \Lean{Point}.
 
@@ -1231,13 +1231,13 @@ lemma op_ne_one {a b : ℚ} (ha : a ≠ 1) (hb : b ≠ 1) : op a b ≠ 1 := by
 
 Użyliśmy tutaj taktyki \Lean{unfold}, która \emph{rozwija} definicję \Lean{op} w danym miejscu.
 
-Mając powyższy lemat, możemy już stwierdzić, że $(A, \star)$ rzeczywiście jest magmą. W Leanie, magma multiplikatywna jest nazwana po prostu \Lean{Mul}, więc wystarczy zdeklarować instancję tej klasy typów dla naszego podtypu.
+Mając powyższy lemat, możemy już stwierdzić, że $(A, \star)$ rzeczywiście jest magmą. W Leanie magma multiplikatywna jest nazwana po prostu \Lean{Mul}, więc wystarczy zdeklarować instancję tej klasy typów dla naszego podtypu.
 \begin{minted}{lean4}
 instance : Mul A where
   mul a b := ⟨op a.val b.val, op_ne_one a.prop b.prop⟩
 \end{minted}
 
-Teraz chcemy udowodnić, że $(A, \star)$ jest nie tylko magmą, ale i podgrupą, czyli że $\star$ jest łączne. Jest to nawet prostrze niż na karce.
+Teraz chcemy udowodnić, że $(A, \star)$ jest nie tylko magmą, ale i podgrupą, czyli że $\star$ jest łączne. Jest to nawet prostsze niż na karce.
 \begin{minted}{lean4}
 import Mathlib.Tactic.Ring
 
@@ -1252,7 +1252,7 @@ Musieliśmy użyć tutaj twierdzenia
 \centerLean{Subtype.ext {p : α → Prop} {a1 a2 : { x // p x }} : ↑a1 = ↑a2 → a1 = a2}
 oraz nowej taktyki, \Lean{change}, która pozwala nam zmienić cel na równoważny \emph{z definicji}.
 
-Teraz pokażemy, że $(A, \star)$ jest monoidem, czyli ma element neutralny. W tym celu należy powiedzieć, że typ $A$ ma jedynkę (równą $2$), a następnie, że ta jedynka istotnie jest elementem nautralnym, tzn. $2 \star a = a \star 2 = a$ dla każdego $a \in A$.
+Teraz pokażemy, że $(A, \star)$ jest monoidem, czyli ma element neutralny. W tym celu należy powiedzieć, że typ $A$ ma jedynkę (równą $2$), a następnie, że ta jedynka istotnie jest elementem neutralnym, tzn. $2 \star a = a \star 2 = a$ dla każdego $a \in A$.
 \begin{minted}{lean4}
 instance : One A where
   one := ⟨2, by decide⟩
@@ -1308,7 +1308,7 @@ instance : CommGroup A where
     ring
 \end{minted}
 
-Z tych wszystkich własności możemy wyprowadzić inne fakty, np. że $(A, \star)$ jest przemiennym monoidem z własnością skracania ($ac = bc \implies a = b$). Jest to oczywiste, ale o tyle ciekawe, że nie każdy monoid przemienny ma własność skracania (np. $(\NN, \cdot)$) i nie każdy monoid przemienny z własnością skracania jest grupą (np. $(\NN, +)$). W Leanie, takie instancje można \vocab{inferować} przy pomocy \Lean{infer_instance}.
+Z tych wszystkich własności możemy wyprowadzić inne fakty, np. że $(A, \star)$ jest przemiennym monoidem z własnością skracania ($ac = bc \implies a = b$). Jest to oczywiste, ale o tyle ciekawe, że nie każdy monoid przemienny ma własność skracania (np. $(\NN, \cdot)$) i nie każdy monoid przemienny z własnością skracania jest grupą (np. $(\NN, +)$). W Leanie takie instancje można \vocab{inferować} przy pomocy \Lean{infer_instance}.
 \begin{minted}{lean4}
 instance : CancelCommMonoid A := by
   infer_instance
@@ -1394,7 +1394,7 @@ have f2_eq_2 : f 2 = 2 := by
 \end{minted}
 
 Teraz musimy skorzystać z faktu, że $a \mid b$ wtedy i tylko wtedy, gdy istnieje $c$ takie, że $b = ca$. W Leanie takie twierdzenie jest dostępne jako \href{https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Divisibility/Basic.html#exists_eq_mul_left_of_dvd}{\Lean{exists_eq_mul_left_of_dvd}}.
-Czytelnik powinien zwrócić uwagę na jego dokładne sformuowanie -- korzystamy z faktu, że $(\NN_+, \cdot)$ jest półgrupą przemienną.
+Czytelnik powinien zwrócić uwagę na jego dokładne sformułowanie -- korzystamy z faktu, że $(\NN_+, \cdot)$ jest półgrupą przemienną.
 \begin{minted}{lean4}
 have f2_eq_2 : f 2 = 2 := by
   specialize h 2 2
@@ -1501,7 +1501,7 @@ def Point.y (p : Point) : Int :=
     \end{minted}
 \end{remark*}
 
-Wracając do konguencji, będziemy chcieli udowodnić poniższe twierdzenie przez indukcję.
+Wracając do konguencji, będziemy chcieli udowodnić poniższe twierdzenie przez indukcję względem $n$.
 \begin{theorem}
     Dla każdej liczby naturalnej $n$ zachodzi
     \[ 4^n \equiv 1 + 3n \pmod{9}. \]
@@ -1570,7 +1570,7 @@ example {n : ℕ} : 4^n ≡ 1 + 3*n [MOD 9] := by
       _ = 1 + 3*(n + 1) := by ring
 \end{minted}
 
-Sformuowanie ostatniego kroku można uprościć, pisząc \Lean{_ = _ := by ring}, ponieważ ostateczny wynik jest naszym celem, więc Lean go zna. Poza tym, w niektórych krokach możemy użyć taktyki \Lean{gcongr}, która automatycznie stosuje pewne twierdzenia dotyczące kongruencji. Ostatecznie otrzymujemy:
+Sformułowanie ostatniego kroku można uprościć, pisząc \Lean{_ = _ := by ring}, ponieważ ostateczny wynik jest naszym celem, więc Lean go zna. Poza tym, w niektórych krokach możemy użyć taktyki \Lean{gcongr}, która automatycznie stosuje pewne twierdzenia dotyczące kongruencji. Ostatecznie otrzymujemy:
 \inputminted{lean4}{case_studies/CongruenceModulo.lean}
 
 \begin{problem}
@@ -1666,6 +1666,7 @@ Jest kilka rzeczy, których w ramach tego kursu nie udało się omówić, a któ
     \item taktyka \Lean{contrapose!},
     \item silna indukcja (\Lean{induction n using Nat.strongRecOn}),
     \item (magiczne) taktyki \Lean{grind} i \Lean{aesop},
+    \item taktyki z pytajnikiem (oprócz poznanego \Lean{simp?} mamy \Lean{exact?}, \Lean{apply?}, \Lean{easop?}, itp.),
     \item \Lean{structure} ... \Lean{deriving} ...,
     \item komenda \Lean{print axioms} (raczej w ramach ciekawostki).
 \end{itemize}
