@@ -2,7 +2,7 @@
 
 Kurs Leana oraz ITP (*interactive theorem proving*).
 
-**[Aktualny skrypt](https://mdbrnowski.github.io/Lean4-course/lean_itp.pdf)**
+**[Skrypt w PDF](https://mdbrnowski.github.io/Lean4-course/lean_itp.pdf)**
 
 Zestawy zadań:
 
